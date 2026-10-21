@@ -1,0 +1,60 @@
+version: 2
+
+project:
+  name: "<project-name>"
+  constitution: "<path-to-constitution>"
+  specs_root: specs
+  memory: "<path-to-operational-memory>"
+
+stack:
+  application: "<optional>"
+  runtime: "<optional>"
+  database: "<optional>"
+  frontend: "<optional>"
+
+commands:
+  test: []
+  lint: []
+  syntax: []
+  build: []
+  smoke: []
+  diff_check:
+    - git diff --check
+
+services: {}
+
+validation:
+  task_checks: focal
+  standard:
+    checkpoints_percent: [50, 100]
+    full_suite_percent: [100]
+  strict:
+    checkpoints_percent: [25, 50, 75, 100]
+    full_suite_percent: [100]
+
+git:
+  strategy: logical_block_commits
+  block_commits: true
+  preserve_expected_dirty_tree: true
+  commit_only_after_required_review: true
+
+risk:
+  strict_mode:
+    - authentication
+    - authorization
+    - permissions
+    - privacy
+    - migrations
+    - destructive_operations
+    - idempotency
+    - traceability
+    - private_storage
+    - architecture
+  immediate_review:
+    - authentication
+    - authorization
+    - permissions
+    - privacy
+    - destructive_operations
+    - private_storage
+    - architecture
