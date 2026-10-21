@@ -1,0 +1,63 @@
+version: 2
+
+spec:
+  id: null
+  name: null
+  path: null
+  status: draft
+
+execution:
+  goal: null
+  mode: STANDARD
+  risk_profile: []
+  phase: spec
+
+progress:
+  total_tasks: 0
+  completed_tasks: 0
+  percent: 0
+
+task_graph:
+  nodes: []
+  edges: []
+  ready: []
+  blocked: []
+
+current_block:
+  id: null
+  name: null
+  task_ids: []
+  status: pending
+
+completed: []
+pending: []
+
+validation:
+  status: pending
+  last_checkpoint: null
+  next_checkpoint: null
+  evidence: []
+
+review:
+  required: false
+  type: null
+  pending: false
+  status: not_required
+  findings: []
+
+git:
+  base_commit: null
+  last_commit: null
+  working_tree: clean # clean | dirty_expected
+  expected_paths: []
+
+human_decisions:
+  pending: []
+  resolved: []
+
+resume:
+  next_action: clarify_spec
+  reason: null
+  context: {}
+
+updated_at: null

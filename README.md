@@ -1,36 +1,125 @@
-# AI SDD Starter
+# SDD v2
 
-Starter reutilizable para ejecutar cambios con Spec-Driven Development v2. Separa las reglas universales del motor de la configuración y el estado de cada repositorio.
+Distribución universal de Spec-Driven Development v2. Mantiene el motor metodológico separado de la configuración de cada proyecto y ofrece dos caminos equivalentes de adopción: GitHub Template Repository o el CLI `sdd init`.
 
-## Jerarquía
+La versión actual es **1.0.0**.
 
-1. `AGENTS.md`: entrada y enrutamiento.
+## Elegir un camino de instalación
+
+### A. GitHub Template Repository
+
+Este camino no requiere Node.js ni el CLI:
+
+1. En GitHub, usa **Use this template** sobre el repositorio oficial.
+2. Crea y clona el nuevo repositorio.
+3. Ajusta el nombre, las fuentes de verdad y los comandos reales en `.sdd/project.yaml`.
+4. Adapta `AGENTS.md` y `docs/constitution.md` a las reglas del proyecto.
+5. Conserva el motor genérico y los templates SDD sin introducir secretos ni rutas personales.
+
+El repositorio resultante puede utilizar SDD v2 directamente mediante lenguaje natural o la entrada conceptual `sdd_run(goal)`. El CLI es opcional.
+
+### B. CLI `sdd init`
+
+El CLI requiere Node.js 18 o posterior y no tiene dependencias npm de runtime. Ejecútalo desde la raíz de una carpeta vacía o de un repositorio existente:
+
+```console
+sdd init
+sdd init --name "Mi proyecto"
+```
+
+Durante la validación local de esta distribución, el mismo binario puede invocarse sin instalarlo globalmente:
+
+```console
+node <ruta-a-la-distribucion>/cli/sdd.js init
+```
+
+`init` instala `AGENTS.md`, `.sdd/project.yaml`, el template de estado, la marca de versión, la constitución, los templates de specs, la skill, el motor y los agentes planner, implementer y reviewer.
+
+## Comandos
+
+### `sdd init`
+
+Construye el manifiesto completo y comprueba todos los destinos antes de escribir.
+
+```console
+sdd init [--name <nombre>] [--dry-run] [--force]
+```
+
+- `--name <nombre>` personaliza únicamente los artefactos configurables. El nombre se trata como contenido, nunca como una ruta.
+- `--dry-run` muestra el plan sin escribir. Si encuentra conflictos sin `--force`, devuelve código 1.
+- `--force` reemplaza sólo archivos SDD declarados en el manifiesto. Nunca habilita el borrado o reemplazo de código ajeno.
+- Sin `--force`, cualquier conflicto aborta antes de la primera escritura.
+- Una instalación equivalente se clasifica como `UNCHANGED` y no reescribe archivos.
+
+### `sdd doctor`
+
+```console
+sdd doctor
+```
+
+Comprueba exclusivamente la infraestructura SDD instalada:
+
+- `AGENTS.md`;
+- `.sdd/project.yaml`;
+- `.sdd/state-template.yaml`;
+- skill y motor;
+- planner, implementer y reviewer;
+- `specs`;
+- `docs/constitution.md`.
+
+Devuelve código 0 para una instalación completa y código 1 si falta o es inválido algún componente. No diagnostica Node.js, PHP, Python, MySQL, servicios ni infraestructura del producto.
+
+### `sdd --version`
+
+Muestra la versión del CLI:
+
+```console
+sdd --version
+# 1.0.0
+```
+
+Cada instalación conserva la misma identificación en `.sdd/version`.
+
+## Garantías del instalador
+
+- No borra archivos ni código del proyecto.
+- No sobrescribe destinos existentes por defecto.
+- Detecta todos los conflictos antes de escribir.
+- `--force` está limitado a destinos SDD gestionados.
+- No ejecuta comandos, tests ni setup del stack del repositorio destino.
+- No asume lenguaje, framework, base de datos o frontend.
+- No incorpora secretos ni rutas personales.
+- Copia el motor byte a byte; nombres y stacks distintos no lo modifican.
+- Es idempotente cuando la instalación ya es equivalente.
+
+## Estructura de la distribución
+
+- `engine/`: skill, motor normativo y definiciones canónicas de agentes.
+- `templates/install/`: artefactos configurables que materializa `init`.
+- `cli/sdd.js`: CLI Node.js sin dependencias externas.
+- `test/installer.test.js`: suite aislada A–I del instalador.
+- `specs/`: artefactos y estado de los cambios desarrollados mediante SDD.
+
+La jerarquía instalada es:
+
+1. `AGENTS.md`: entrada y reglas del repositorio.
 2. `.agents/skills/sdd/SKILL.md`: protocolo operativo breve.
-3. `.agents/skills/sdd/references/engine.md`: única fuente normativa detallada.
-4. `.sdd/project.yaml`: configuración del repositorio.
-5. `specs/<spec>/state.yaml`: estado preciso de ejecución.
+3. `.agents/skills/sdd/references/engine.md`: fuente normativa detallada.
+4. `.sdd/project.yaml`: configuración específica del proyecto.
+5. `specs/<spec>/state.yaml`: estado preciso de cada ejecución.
 
-## Instalación
+## Desarrollo y validación local
 
-1. Copia el contenido de este directorio a la raíz de un repositorio.
-2. Renombra `AGENTS.template.md` a `AGENTS.md` o integra sólo su router en las reglas existentes.
-3. Renombra `.sdd/project.template.yaml` a `.sdd/project.yaml` y completa comandos, servicios y riesgos.
-4. Conserva `.sdd/state-template.yaml`; se copia como `state.yaml` al activar una spec.
-5. Renombra `specs/README.template.md` a `specs/README.md` si el proyecto aún no tiene reglas para specs.
-6. Copia `templates/constitution.template.md` a la ruta declarada en `project.yaml` y adáptala.
-7. Prueba la entrada conceptual `sdd_run("objetivo")` o expresa el objetivo en lenguaje natural.
+```console
+npm test
+npm run check
+npm pack --dry-run
+```
 
-No copies secretos, rutas personales ni configuración de una máquina en los archivos versionados. Los comandos y servicios son opcionales: declara únicamente lo que exista en el repositorio.
+La suite usa sólo APIs estándar de Node.js y ejecuta cada escenario en un directorio temporal aislado.
 
-## Adaptación mínima
+Consulta [PLAYBOOK.md](PLAYBOOK.md) para la operación diaria, [el motor](engine/skill/references/engine.md) para el contrato metodológico y [CHANGELOG.md](CHANGELOG.md) para los cambios de versión.
 
-- Define fuentes de verdad y reglas de dominio en `AGENTS.md` y la constitución.
-- Configura stack, comandos, servicios, checkpoints, Git y categorías de riesgo en `.sdd/project.yaml`.
-- Mantén el motor genérico. Si una diferencia pertenece a un solo proyecto, resuélvela en configuración o reglas del repositorio.
-- Ajusta los agentes sólo cuando cambie su contrato, no para repetir detalles del stack.
+## Estado de publicación
 
-## Uso
-
-El coordinador siempre intenta reanudar antes de clasificar trabajo nuevo. Si no hay estado incompleto, el motor elige FAST, DEBUG, STANDARD o STRICT; genera los artefactos necesarios, ejecuta una tarea lista por invocación, valida proporcionalmente, revisa según riesgo y commitea por bloque lógico.
-
-Consulta [PLAYBOOK.md](PLAYBOOK.md) para la operación diaria y [engine.md](.agents/skills/sdd/references/engine.md) para el contrato completo.
+La release `1.0.0` está preparada para validación local. Todavía no fue publicada en GitHub ni npm y no tiene tag.

@@ -1,0 +1,29 @@
+{
+  "name": "sdd-v2",
+  "version": "1.0.0",
+  "description": "Distribución universal oficial de SDD v2",
+  "license": "MIT",
+  "type": "commonjs",
+  "bin": {
+    "sdd": "cli/sdd.js"
+  },
+  "scripts": {
+    "test": "node --test test/installer.test.js",
+    "check": "node --check cli/sdd.js && node --check test/installer.test.js"
+  },
+  "files": [
+    "cli/",
+    "engine/",
+    "templates/install/",
+    "README.md",
+    "CHANGELOG.md"
+  ],
+  "keywords": [
+    "sdd",
+    "spec-driven-development",
+    "cli"
+  ],
+  "engines": {
+    "node": ">=18"
+  }
+}

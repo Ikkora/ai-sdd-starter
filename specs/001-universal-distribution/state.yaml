@@ -1,0 +1,78 @@
+version: 2
+
+spec:
+  id: "001"
+  name: "universal-distribution"
+  path: "specs/001-universal-distribution"
+  status: approved
+
+execution:
+  goal: "Convertir el repositorio en la distribución universal oficial de SDD v2 con CLI seguro y validación local completa."
+  mode: STRICT
+  risk_profile: [architecture, destructive_operations, idempotency, traceability]
+  phase: committing
+
+progress:
+  total_tasks: 5
+  completed_tasks: 5
+  percent: 100
+
+task_graph:
+  nodes:
+    - { id: T01, requires: [RF-01, RF-02, RF-10], depends_on: [], areas: [engine, templates/install], risk: [architecture], checks: [methodology_comparison, sensitive_path_scan], done_when: "canonical sources separated" }
+    - { id: T02, requires: [RF-02, RF-03, RF-04, RF-05, RF-06, RF-07, RF-10], depends_on: [T01], areas: [cli/sdd.js, package.json], risk: [destructive_operations, idempotency], checks: [node_check, init_smoke], done_when: "safe init works" }
+    - { id: T03, requires: [RF-08, RF-09], depends_on: [T01, T02], areas: [cli/sdd.js, package.json], risk: [traceability], checks: [version_smoke, doctor_smoke], done_when: "version and doctor work" }
+    - { id: T04, requires: [RF-02, RF-03, RF-04, RF-05, RF-06, RF-07, RF-08, RF-09, RF-10], depends_on: [T02, T03], areas: [test/installer.test.js], risk: [regression, traceability], checks: [installer_tests], done_when: "isolated A-I suite passes" }
+    - { id: T05, requires: [RF-11], depends_on: [T04], areas: [README.md, CHANGELOG.md], risk: [compatibility], checks: [pack_dry_run, diff_check], done_when: "local release prepared" }
+  edges: [T01->T02, T02->T03, T03->T04, T04->T05]
+  ready: []
+  blocked: []
+
+current_block:
+  id: release-1.0.0
+  name: "Distribución universal 1.0.0"
+  task_ids: [T01, T02, T03, T04, T05]
+  status: reviewed
+
+completed: [T01, T02, T03, T04, T05]
+pending: []
+
+validation:
+  status: passed
+  last_checkpoint: 100
+  next_checkpoint: null
+  evidence:
+    - { task: T01, checks: "15 SHA-256 comparisons", result: "BYTE_IDENTICAL" }
+    - { task: T01, checks: "sensitive path and secret indicator scan", result: "NO_MATCHES" }
+    - { task: T02, checks: "node --check and isolated init smokes", result: "PASS" }
+    - { checkpoint: 25, checks: "node --check; empty-directory dry-run; git diff --check", result: "PASS" }
+    - { task: T03, checks: "version; complete doctor; missing-file doctor", result: "PASS" }
+    - { checkpoint: 50, checks: "isolated init; doctor 10/10; version; syntax; diff", result: "PASS" }
+    - { task: T04, checks: "node --check test/installer.test.js; node --test test/installer.test.js", result: "PASS 9/9" }
+    - { checkpoint: 75, checks: "syntax; installer suite outside sandbox; diff", result: "PASS 9/9" }
+    - { task: T05, checks: "docs; pnpm pack dry-run; package metadata; syntax; diff", result: "PASS" }
+    - { checkpoint: 100, checks: "full A-I suite; doctor; version; pack dry-run; syntax; diff; sensitive scan", result: "PASS" }
+
+review:
+  required: true
+  type: immediate_and_final
+  pending: false
+  status: approved
+  findings: []
+
+git:
+  base_commit: "ea3c51cdd065d9dff5f18671cbad58d2f23b876f"
+  last_commit: null
+  working_tree: dirty_expected
+  expected_paths: [AGENTS.md, .sdd/project.yaml, docs/constitution.md, specs/001-universal-distribution, engine, templates, cli, test, package.json, package-lock.json, README.md, CHANGELOG.md, PLAYBOOK.md, .agents, .codex]
+
+human_decisions:
+  pending: []
+  resolved: []
+
+resume:
+  next_action: "commit_block:release-1.0.0"
+  reason: "Revisión final independiente aprobada sin bloqueantes."
+  context: { block: "release-1.0.0", final_review: approved }
+
+updated_at: "2026-10-21T00:00:00-03:00"

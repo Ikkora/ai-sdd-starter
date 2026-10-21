@@ -1,0 +1,63 @@
+version: 2
+
+project:
+  name: "AI SDD Starter"
+  constitution: "docs/constitution.md"
+  specs_root: specs
+  memory: null
+
+stack:
+  application: "CLI de distribución SDD v2"
+  runtime: "Node.js"
+  database: null
+  frontend: null
+
+commands:
+  test:
+    - node --test
+  lint: []
+  syntax:
+    - node --check cli/sdd.js
+  build: []
+  smoke:
+    - node cli/sdd.js --version
+  diff_check:
+    - git diff --check
+
+services: {}
+
+validation:
+  task_checks: focal
+  standard:
+    checkpoints_percent: [50, 100]
+    full_suite_percent: [100]
+  strict:
+    checkpoints_percent: [25, 50, 75, 100]
+    full_suite_percent: [100]
+
+git:
+  strategy: logical_block_commits
+  block_commits: true
+  preserve_expected_dirty_tree: true
+  commit_only_after_required_review: true
+
+risk:
+  strict_mode:
+    - authentication
+    - authorization
+    - permissions
+    - privacy
+    - migrations
+    - destructive_operations
+    - idempotency
+    - traceability
+    - private_storage
+    - architecture
+  immediate_review:
+    - authentication
+    - authorization
+    - permissions
+    - privacy
+    - destructive_operations
+    - private_storage
+    - architecture
