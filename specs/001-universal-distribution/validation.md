@@ -51,8 +51,8 @@ Compatibilidad demostrada en carpeta vacía, repositorio existente y stacks nomi
 - [x] Requisitos con evidencia.
 - [x] Checkpoint final verde.
 - [x] Revisión final independiente aprobada.
-- [ ] Commit lógico y árbol limpio.
+- [x] Commit lógico `e66ea95c6c3967b1bc23530d925aa957d59ef489` y árbol limpio tras cierre de estado.
 
 ## Conclusión
 
-Implementación, validación y revisión final aprobadas; commit lógico y verificación de limpieza pendientes.
+Release local 1.0.0 preparada y aprobada. No fue publicada ni etiquetada.

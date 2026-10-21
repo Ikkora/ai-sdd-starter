@@ -4,13 +4,13 @@ spec:
   id: "001"
   name: "universal-distribution"
   path: "specs/001-universal-distribution"
-  status: approved
+  status: closed
 
 execution:
   goal: "Convertir el repositorio en la distribución universal oficial de SDD v2 con CLI seguro y validación local completa."
   mode: STRICT
   risk_profile: [architecture, destructive_operations, idempotency, traceability]
-  phase: committing
+  phase: closed
 
 progress:
   total_tasks: 5
@@ -32,7 +32,7 @@ current_block:
   id: release-1.0.0
   name: "Distribución universal 1.0.0"
   task_ids: [T01, T02, T03, T04, T05]
-  status: reviewed
+  status: complete
 
 completed: [T01, T02, T03, T04, T05]
 pending: []
@@ -62,8 +62,8 @@ review:
 
 git:
   base_commit: "ea3c51cdd065d9dff5f18671cbad58d2f23b876f"
-  last_commit: null
-  working_tree: dirty_expected
+  last_commit: "e66ea95c6c3967b1bc23530d925aa957d59ef489"
+  working_tree: clean
   expected_paths: [AGENTS.md, .sdd/project.yaml, docs/constitution.md, specs/001-universal-distribution, engine, templates, cli, test, package.json, package-lock.json, README.md, CHANGELOG.md, PLAYBOOK.md, .agents, .codex]
 
 human_decisions:
@@ -71,8 +71,8 @@ human_decisions:
   resolved: []
 
 resume:
-  next_action: "commit_block:release-1.0.0"
-  reason: "Revisión final independiente aprobada sin bloqueantes."
-  context: { block: "release-1.0.0", final_review: approved }
+  next_action: null
+  reason: "Spec cerrada; release local validada, revisada y commiteada."
+  context: { block: "release-1.0.0", final_review: approved, published: false, tagged: false }
 
 updated_at: "2026-10-21T00:00:00-03:00"
