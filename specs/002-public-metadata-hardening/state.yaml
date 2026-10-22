@@ -1,0 +1,70 @@
+version: 2
+
+spec:
+  id: "002"
+  name: "public-metadata-hardening"
+  path: "specs/002-public-metadata-hardening"
+  status: closed
+
+execution:
+  goal: "Preparar el hardening público documental de SDD Universal v1.0.1."
+  mode: STANDARD
+  risk_profile: [public_metadata, release_accuracy]
+  phase: closed
+
+progress:
+  total_tasks: 2
+  completed_tasks: 2
+  percent: 100
+
+task_graph:
+  nodes:
+    - { id: T01, requires: [RF-01, RF-02, RF-03], depends_on: [], areas: [LICENSE, SECURITY.md, .gitignore], risk: [public_metadata], checks: [license_check, security_channel_check, gitignore_check], done_when: "public metadata files comply" }
+    - { id: T02, requires: [RF-04, RF-05, RF-06], depends_on: [T01], areas: [README.md, CHANGELOG.md], risk: [public_metadata, release_accuracy], checks: [publication_copy_check, changelog_check, scope_diff], done_when: "publication docs are accurate" }
+  edges: [T01->T02]
+  ready: []
+  blocked: []
+
+current_block:
+  id: public-hardening-1.0.1
+  name: "Hardening público v1.0.1"
+  task_ids: [T01, T02]
+  status: complete
+
+completed: [T01, T02]
+pending: []
+
+validation:
+  status: passed
+  last_checkpoint: 100
+  next_checkpoint: null
+  evidence:
+    - { task: T01, checks: "license; security channel; 15 positive and 7 negative ignore cases; diff", result: "PASS" }
+    - { checkpoint: 50, checks: "15 ignored; 7 SDD paths visible; MIT package coherence; diff", result: "PASS" }
+    - { task: T02, checks: "publication copy; changelog; scope diff; diff-check", result: "PASS" }
+    - { checkpoint: 100, checks: "pnpm test 9/9; pnpm run check; doctor 10/10; protected diff; tag; license; copy; sensitive scan", result: "PASS" }
+
+review:
+  required: true
+  type: final
+  pending: false
+  status: approved
+  findings: []
+
+git:
+  base_commit: "50524aef31ed0f97c2dd3f5e9de789d8cb73e8f6"
+  last_commit: "v1.0.1^{commit}"
+  working_tree: clean
+  expected_paths: [LICENSE, SECURITY.md, .gitignore, README.md, CHANGELOG.md, specs/002-public-metadata-hardening]
+  protected_tag: { name: "v1.0.0", object: "c953774147766cfe7b57753f9b2285607f1c445a" }
+
+human_decisions:
+  pending: []
+  resolved: []
+
+resume:
+  next_action: null
+  reason: "Spec cerrada; hardening validado, aprobado y preparado para commit/tag local únicos."
+  context: { block: "public-hardening-1.0.1", final_review: approved, push: false, npm_publish: false }
+
+updated_at: "2026-10-21T00:00:00-03:00"

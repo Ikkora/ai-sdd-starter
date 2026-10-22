@@ -2,7 +2,9 @@
 
 Distribución universal de Spec-Driven Development v2. Mantiene el motor metodológico separado de la configuración de cada proyecto y ofrece dos caminos equivalentes de adopción: GitHub Template Repository o el CLI `sdd init`.
 
-La versión actual es **1.0.0**.
+La versión funcional actual del CLI sigue siendo **1.0.0**. La versión
+**1.0.1** identifica únicamente el hardening de metadata y documentación del
+repositorio, sin cambios funcionales en el motor SDD v2 ni en el CLI.
 
 ## Elegir un camino de instalación
 
@@ -122,4 +124,10 @@ Consulta [PLAYBOOK.md](PLAYBOOK.md) para la operación diaria, [el motor](engine
 
 ## Estado de publicación
 
-La release `1.0.0` está preparada para validación local. Todavía no fue publicada en GitHub ni npm y no tiene tag.
+La versión `1.0.0` está publicada en GitHub con su tag y release, y el
+repositorio oficial está disponible como GitHub Template Repository. No fue
+publicada en npm.
+
+La versión `1.0.1` corresponde exclusivamente al hardening de metadata y
+documentación del repositorio; no introduce cambios funcionales en el motor
+SDD v2 ni en el CLI.
