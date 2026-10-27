@@ -2,7 +2,15 @@
 
 Todos los cambios relevantes de esta distribución se documentan aquí. El proyecto sigue [Semantic Versioning](https://semver.org/).
 
-## [1.1.0] - Unreleased
+## [1.1.1] - 2026-10-26
+
+### Changed
+
+- Corrección del README público para reflejar que `v1.1.0` ya está publicada con tag y GitHub Release.
+- Aclaración de que GitHub es el canal oficial de distribución y npm todavía no fue publicado.
+- Documentación de `v1.1.1` como parche exclusivamente documental, sin cambios en el motor, el CLI, los Quality Gates, Deep Review, Anti-Slop, el instalador ni los tests funcionales.
+
+## [1.1.0] - 2026-10-26
 
 ### Added
 
@@ -32,7 +40,8 @@ Todos los cambios relevantes de esta distribución se documentan aquí. El proye
 
 - Los 30 tests simulados, ambos smokes reales y sus re-checks focales están verdes.
 - Los smokes reales Anti-Slop y Deep Review están preservados. Sus tres findings fueron corregidos en una ronda consolidada y pasaron los re-checks focales.
-- No existe tag ni release `v1.1.0`, y no hubo publicación npm. Ninguna de esas acciones debe realizarse sin aprobación humana explícita.
+- La spec 003 cerró con Reviewer final aprobado, tag `v1.1.0` y GitHub Release `SDD Universal v1.1.0` publicados.
+- GitHub es el canal oficial de distribución. npm no fue publicado.
 
 ## [1.0.1] - 2026-10-21
 

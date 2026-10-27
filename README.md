@@ -2,7 +2,9 @@
 
 Distribución universal de Spec-Driven Development v2. Mantiene el motor metodológico separado de la configuración de cada proyecto y ofrece dos caminos equivalentes de adopción: GitHub Template Repository o el CLI `sdd init`.
 
-La próxima versión funcional preparada es **1.1.0**. Agrega Quality Gates sin hacer depender el core de servicios externos. Anti-Slop conserva su integración opcional y Deep Review aporta una revisión técnica nativa de Codex. Ambos smokes reales, la única ronda de corrección, los re-checks y la validación amplia están completos; resta el review final y los commits. Aún no existe tag, release ni publicación npm de `v1.1.0`.
+La versión estable actual es **1.1.0**, publicada en GitHub con tag y release. Incorpora Quality Gates extensibles sin hacer depender el core de servicios externos, integración opcional con Anti-Slop y Deep Review nativo de Codex. La spec 003 está cerrada, el Reviewer final aprobó la implementación, los 30 tests pasan y `sdd doctor` informa 14/14 checks HEALTHY con ambos providers AVAILABLE.
+
+La revisión **1.1.1** corrige exclusivamente la documentación pública sobre ese estado de publicación. No modifica el motor, el CLI, los Quality Gates ni la versión funcional instalada. GitHub es el canal oficial de distribución; npm todavía no fue publicado.
 
 La versión **1.0.1** continúa identificando exclusivamente el hardening de metadata, seguridad y documentación del repositorio sobre la versión funcional `1.0.0`; sus tags e historia permanecen inalterados.
 
@@ -163,4 +165,6 @@ Consulta [PLAYBOOK.md](PLAYBOOK.md) para la operación diaria, [el motor](engine
 
 - `v1.0.0` está publicada en GitHub con su tag y release, y el repositorio oficial está disponible como GitHub Template Repository. No fue publicada en npm.
 - `v1.0.1` corresponde exclusivamente al hardening de metadata, seguridad y documentación del repositorio; no introduce cambios funcionales en el motor SDD v2 ni en el CLI.
-- `v1.1.0` está preparada en código y documentación, pero permanece en integración hasta completar el review independiente y los commits. **No existe tag, release ni publicación npm de 1.1.0 y no deben crearse sin aprobación humana explícita.**
+- `v1.1.0` es la versión funcional estable. Está publicada en GitHub con su tag y el release `SDD Universal v1.1.0`; incluye Quality Gates y la skill nativa `sdd-deep-review`.
+- `v1.1.1` es un parche exclusivamente documental que corrige el estado público de la versión 1.1.0. No contiene cambios funcionales.
+- GitHub es el canal oficial de distribución. Un tercero puede adoptar SDD mediante el GitHub Template Repository o el CLI local `sdd init`. npm todavía no fue publicado.
