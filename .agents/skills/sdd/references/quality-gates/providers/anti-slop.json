@@ -1,0 +1,31 @@
+{
+  "id": "anti_slop",
+  "display_name": "Anti-Slop",
+  "kind": "quality_filter",
+  "source": "https://github.com/miqdadbadjuber/anti-slop",
+  "default_run_on": ["FAST", "DEBUG", "STANDARD", "STRICT"],
+  "applicability": {
+    "default": false,
+    "any_tags": ["ui", "ux", "copy", "documentation", "comments", "responsive", "accessibility", "generated_content", "slop_risk"],
+    "exclude_tags": ["minimal_sql_migration"]
+  },
+  "detection": {
+    "availability_env": "SDD_QUALITY_GATE_ANTI_SLOP",
+    "project_paths": [
+      ".codex/skills/antislop/SKILL.md",
+      ".agents/skills/antislop/SKILL.md",
+      ".cursor/skills/antislop/SKILL.md",
+      ".claude/skills/antislop/SKILL.md",
+      ".opencode/skills/antislop/SKILL.md",
+      ".cline/skills/antislop/SKILL.md",
+      ".gemini/skills/antislop/SKILL.md",
+      ".hermes/skills/antislop/SKILL.md",
+      ".pi/skills/antislop/SKILL.md"
+    ]
+  },
+  "invocation": {
+    "type": "agent_skill",
+    "preferred_mode": "after",
+    "skills": ["antislop", "antislop-ui", "antislop-copywriting", "antislop-human", "antislop-layoutmobile", "antislop-code"]
+  }
+}

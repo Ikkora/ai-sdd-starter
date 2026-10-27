@@ -13,6 +13,7 @@ Estado: pending
 | Hito | Incremento validado | Comandos | Resultado | Residuos |
 |---|---|---|---|---|
 
+## Quality Gates
 ## Revisiones
 ## Compatibilidad y rollback
 ## Incidencias

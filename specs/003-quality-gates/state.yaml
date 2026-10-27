@@ -1,0 +1,152 @@
+version: 2
+
+spec:
+  id: "003"
+  name: "quality-gates"
+  path: "specs/003-quality-gates"
+  status: approved
+
+execution:
+  goal: "Integrar SDD Universal v1.1.0 sobre la baseline oficial v1.0.1, preservar historia y completar smokes reales Anti-Slop/Deep Review sin Cursor ni servicios externos."
+  mode: STRICT
+  risk_profile: [architecture, idempotency, traceability, compatibility, release_accuracy]
+  phase: reviewing
+
+progress:
+  total_tasks: 14
+  completed_tasks: 13
+  percent: 93
+
+task_graph:
+  nodes:
+    - { id: T01, depends_on: [], areas: [repository, candidate, git], risk: [traceability], done_when: "delta clasificado y baseline protegida" }
+    - { id: T02, depends_on: [T01], areas: [engine/quality-gates], risk: [architecture], done_when: "runtime y adapters genéricos integrados" }
+    - { id: T03, depends_on: [T02], areas: [engine/skill, engine/agents, installed_copies], risk: [architecture], done_when: "contrato y agentes integrados" }
+    - { id: T04, depends_on: [T03], areas: [.sdd, templates], risk: [compatibility, idempotency], done_when: "config y templates 1.1.0 integrados" }
+    - { id: T05, depends_on: [T02, T04], areas: [cli, package_metadata], risk: [compatibility], done_when: "doctor y versión integrados" }
+    - { id: T06, depends_on: [T04, T05], areas: [test], risk: [regression], done_when: "tests simulados integrados y verdes" }
+    - { id: T07, depends_on: [T05, T06], areas: [documentation, spec_003], risk: [release_accuracy], done_when: "documentación reconciliada" }
+    - { id: T08, depends_on: [T07], areas: [anti_slop, state], risk: [external_setup, traceability], done_when: "smoke Anti-Slop real persistido" }
+    - { id: T09, depends_on: [T08], areas: [engine/quality-gates, engine/skills/sdd-deep-review, engine/skill, engine/agents], risk: [architecture, security, compatibility, traceability], done_when: "deep_review y sdd-deep-review integrados con evidencia normalizada" }
+    - { id: T10, depends_on: [T09], areas: [cli, config, templates, tests, documentation], risk: [architecture, idempotency, compatibility, release_accuracy], done_when: "skill distribuida, detectable y cubierta sin Cursor ni terceros" }
+    - { id: T11, depends_on: [T10], areas: [deep_review, evidence, state], risk: [correctness, security, traceability], done_when: "smoke Deep Review real persistido" }
+    - { id: T12, depends_on: [T08, T11], areas: [findings, corrections], risk: [regression, security], done_when: "findings consolidados y una ronda aplicada" }
+    - { id: T13, depends_on: [T12], areas: [full_scope], risk: [release_accuracy, compatibility], done_when: "re-checks y validación amplia verdes" }
+    - { id: T14, depends_on: [T13], areas: [review, git], risk: [architecture, traceability, release_accuracy], done_when: "reviewer aprobado, commits creados y árbol limpio" }
+  edges: [T01->T02, T02->T03, T03->T04, T02->T05, T04->T05, T05->T06, T06->T07, T07->T08, T08->T09, T09->T10, T10->T11, T08->T12, T11->T12, T12->T13, T13->T14]
+  ready: [T14]
+  blocked: []
+
+current_block:
+  id: final-review
+  name: "Reviewer final y cierre técnico"
+  task_ids: [T14]
+  status: in_progress
+
+completed: [T01, T02, T03, T04, T05, T06, T07, T08, T09, T10, T11, T12, T13]
+pending: [T14]
+
+quality_gates:
+  status: completed
+  correction_rounds: 1
+  providers:
+    anti_slop:
+      mode: required
+      applicability: true
+      availability: available
+      status: completed
+      findings:
+        - { id: "qg-f0f140afcd4c", providers: [anti_slop], category: "copy_hygiene", severity: high, location: "specs/003-quality-gates/{spec.md,plan.md,tasks.md,research.md,validation.md}", summary: "La documentación auditada contiene 10 usos de raya tipográfica, prohibida por la regla R-02 de Anti-Slop.", recommendation: "Reemplazar cada raya tipográfica por puntuación directa durante la ronda consolidada de corrección y ejecutar un re-check focal.", blocking: false }
+      severity: high
+      correction_required: false
+      completed_at: "2026-10-22T20:36:47-03:00"
+      recheck: { status: recheck_complete, completed_at: "2026-10-26" }
+    deep_review:
+      mode: required
+      applicability: true
+      availability: available
+      status: completed
+      findings:
+        - { id: "qg-ec9e58f8053c", providers: [deep_review], category: "configuration", severity: medium, location: ".cursor/settings.json:3", summary: "Eliminar la activación residual de Thermos", evidence: "El working tree todavía contiene plugins.thermos.enabled: true. Al abrir el proyecto en Cursor, esta configuración mantiene activo el provider descartado y puede seguir consumiendo su runtime o cuota.", recommendation: "Quitar la entrada thermos; eliminar .cursor/settings.json si queda vacío, sin borrar las skills de Anti-Slop instaladas en .cursor/skills.", blocking: false }
+        - { id: "qg-4213388b84dc", providers: [deep_review], category: "correctness", severity: low, location: "engine/quality-gates/index.js:130", summary: "Ignorar overrides de entorno cuando el manifest no declara uno", evidence: "El manifest deep_review no tiene availability_env, pero detectProvider consulta env[undefined]. Con la skill presente, un override undefined=unavailable anula la detección determinista.", recommendation: "Consultar el entorno sólo cuando manifest.detection.availability_env sea un nombre no vacío y agregar una prueba de regresión.", blocking: false }
+      severity: medium
+      correction_required: false
+      completed_at: "2026-10-26"
+      recheck: { status: recheck_complete, completed_at: "2026-10-26" }
+  consolidated_findings:
+    - { id: "qg-f0f140afcd4c", providers: [anti_slop], category: "copy_hygiene", severity: high, location: "specs/003-quality-gates/{spec.md,plan.md,tasks.md,research.md,validation.md}", summary: "La documentación auditada contiene 10 usos de raya tipográfica, prohibida por la regla R-02 de Anti-Slop.", evidence: null, recommendation: "Reemplazar cada raya tipográfica por puntuación directa durante la ronda consolidada de corrección y ejecutar un re-check focal.", blocking: false }
+    - { id: "qg-ec9e58f8053c", providers: [deep_review], category: "configuration", severity: medium, location: ".cursor/settings.json:3", summary: "Eliminar la activación residual de Thermos", evidence: "El working tree todavía contiene plugins.thermos.enabled: true. Al abrir el proyecto en Cursor, esta configuración mantiene activo el provider descartado y puede seguir consumiendo su runtime o cuota.", recommendation: "Quitar la entrada thermos; eliminar .cursor/settings.json si queda vacío, sin borrar las skills de Anti-Slop instaladas en .cursor/skills.", blocking: false }
+    - { id: "qg-4213388b84dc", providers: [deep_review], category: "correctness", severity: low, location: "engine/quality-gates/index.js:130", summary: "Ignorar overrides de entorno cuando el manifest no declara uno", evidence: "El manifest deep_review no tiene availability_env, pero detectProvider consulta env[undefined]. Con la skill presente, un override undefined=unavailable anula la detección determinista.", recommendation: "Consultar el entorno sólo cuando manifest.detection.availability_env sea un nombre no vacío y agregar una prueba de regresión.", blocking: false }
+  recheck:
+    status: recheck_complete
+    provider_ids: [anti_slop, deep_review]
+    completed_at: "2026-10-26"
+
+validation:
+  status: passed_pending_final_review
+  last_checkpoint: 75
+  next_checkpoint: 100
+  evidence:
+    - { task: T01, checks: "branch/status; SHA-256 inventory; tag objects and peeled commits", result: "PASS" }
+    - { task: T02, checks: "node --check; JSON parse; policy smoke; SHA-256 candidate comparison; diff-check", result: "PASS" }
+    - { task: T02, checks: "immediate architecture review", result: "CHANGES_NEEDED critical_override too broad" }
+    - { task: T02, checks: "critical override focal cases; syntax; diff-check", result: "CORRECTION_PASS awaiting focal re-review" }
+    - { task: T02, checks: "focal re-review RF-10", result: "APPROVED" }
+    - { task: T03, checks: "8 canonical/install byte comparisons; TOML/JSON structure; normative invariants; diff-check", result: "PASS" }
+    - { checkpoint: 25, checks: "T01-T03 architecture increment", result: "PENDING_REVIEW" }
+    - { checkpoint: 25, checks: "independent architecture review; baseline/tags; focal sensitive scan", result: "APPROVED" }
+    - { task: T04, checks: "18 candidate hashes; 8 template copy pairs; current/legacy config; state/version; diff-check", result: "PASS" }
+    - { task: T05, checks: "CLI syntax/version; doctor 13/13; legacy 10/10; required missing; package/lock; diff-check", result: "PASS" }
+    - { task: T06, checks: "test syntax; installer 9/9; quality gates 19/19; total 28/28", result: "PASS outside sandbox after spawn EPERM infrastructure failure" }
+    - { checkpoint: 50, checks: "T04-T06 distribution and compatibility increment", result: "PENDING_REVIEW" }
+    - { checkpoint: 50, checks: "independent block review", result: "CHANGES_NEEDED state resume/provider pre-evaluation coherence" }
+    - { checkpoint: 50, checks: "focal state re-review", result: "APPROVED" }
+    - { task: T07, checks: "semantic docs merge; 1.0.x history; pending-smoke accuracy; focal sensitive scan; diff-check", result: "PASS" }
+    - { task: T08, checks: "Codex plugin list; project/user skill paths; SDD bridge", result: "AWAIT_HUMAN_SETUP anti_slop not detected" }
+    - { task: T08, checks: "capability Anti-Slop 3.2.21 Codex/Cursor; real AFTER audit; original output; canonical normalization", result: "COMPLETED_WITH_FINDINGS qg-f0f140afcd4c high; focal recheck pending consolidated correction" }
+    - { task: T09, checks: "Cursor executable/app inventory; project/user skill paths; SDD bridge", result: "AWAIT_HUMAN_SETUP thermos and Cursor not detected" }
+    - { task: T09, checks: "human decision; official Codex review-agent and skill conventions; affected graph only", result: "REPLANNED thermos replaced by native deep_review; no external setup pending" }
+    - { task: T09, checks: "syntax; manifests; frontmatter; canonical/installed hashes; evidence normalization/consolidation; immediate architecture review", result: "PASS; REVIEW APPROVED" }
+    - { task: T10, checks: "init/idempotency; 9 canonical hashes; modes and policies; legacy 10/10; tests 29/29; doctor 14/14; active Thermos scan; immediate architecture review", result: "PASS outside sandbox after spawn EPERM infrastructure failure; REVIEW APPROVED" }
+    - { task: T11, checks: "real sdd-deep-review; full working tree; baseline b275f69; raw output; canonical normalization", result: "COMPLETED_WITH_FINDINGS qg-ec9e58f8053c medium; qg-4213388b84dc low" }
+    - { checkpoint: 75, checks: "T07-T11 documentation, native provider distribution, Anti-Slop and Deep Review real smokes", result: "CHANGES_NEEDED stale smoke status; T10 Thermos scan omitted .cursor/settings.json" }
+    - { task: T12, checks: "single consolidated round; Anti-Slop punctuation; residual Thermos setting removed; availability_env guard regression 21/21; docs reconciliation; diff-check", result: "CORRECTION_PASS awaiting focal checkpoint review" }
+    - { checkpoint: 75, checks: "focal re-review of stale status, superseded scan, residual setting, env guard and Anti-Slop punctuation", result: "APPROVED" }
+    - { task: T13, checks: "real Anti-Slop and Deep Review focal rechecks; tests 30/30; syntax; doctor 14/14; pack 26 entries; 9 byte pairs; scans; diff; tag integrity", result: "PASS" }
+
+review:
+  required: true
+  type: immediate_architecture_and_final
+  pending: false
+  status: approved
+  findings:
+    - { task: T02, severity: high, blocking: false, status: resolved, summary: "critical_override no longer treats generic blocking findings as critical", location: "engine/quality-gates/index.js" }
+    - { checkpoint: 75, severity: high, blocking: true, status: resolved, summary: "README and CHANGELOG still report the completed Deep Review smoke as pending", location: "README.md; CHANGELOG.md; specs/003-quality-gates/validation.md" }
+    - { checkpoint: 75, severity: medium, blocking: true, status: resolved, summary: "T10 Thermos scan evidence omitted .cursor/settings.json and must be qualified by the later finding", location: "specs/003-quality-gates/validation.md; specs/003-quality-gates/state.yaml" }
+  final:
+    verdict: APPROVED
+    blocking_findings: 0
+    completed_at: "2026-10-26"
+    evidence: "RF-01..RF-24, Quality Gates reales y re-checks, límites de agentes, alcance Git y ausencia de tag/release/publicación aprobados por Reviewer SDD independiente."
+
+git:
+  base_commit: "b275f69a3591ae5b60c1f8cc01f5f7815431a820"
+  last_commit: "b275f69a3591ae5b60c1f8cc01f5f7815431a820"
+  working_tree: dirty_expected
+  expected_paths: [specs/003-quality-gates, engine/quality-gates, engine/skills, engine/skill, engine/agents, .agents/skills/sdd, .agents/skills/sdd-deep-review, .codex/agents, .codex/skills, .cursor, .sdd, templates, anti-slop, deep-review, AGENTS.md, AGENTS.template.md, specs/README.template.md, cli/sdd.js, package.json, package-lock.json, test, docs/constitution.md, PLAYBOOK.md, README.md, CHANGELOG.md]
+  protected_tags:
+    - { name: "v1.0.0", object: "c953774147766cfe7b57753f9b2285607f1c445a", commit: "50524aef31ed0f97c2dd3f5e9de789d8cb73e8f6" }
+    - { name: "v1.0.1", object: "b7b49696ceec904958b9617bfb5ae110e9a8b578", commit: "b275f69a3591ae5b60c1f8cc01f5f7815431a820" }
+
+human_decisions:
+  pending: []
+  resolved:
+    - { id: "anti_slop", type: "setup", resolution: "Anti-Slop 3.2.21 disponible en Codex y Cursor; smoke real AFTER ejecutado y preservado con un finding HIGH normalizado.", resolved_at: "2026-10-22T20:36:47-03:00" }
+    - { id: "thermos_replacement", type: "architecture", resolution: "Thermos descartado antes del release por dependencia y cuota de Cursor; reemplazado por el provider nativo deep_review con skill local sdd-deep-review.", resolved_at: "2026-10-26" }
+
+resume:
+  next_action: "commit:T14"
+  reason: "Reviewer final independiente APPROVED sin bloqueantes; corresponde crear los commits lógicos, registrar evidencia Git y confirmar árbol limpio."
+  context: { block: "final-validation", candidate: "reference_only", pending_setup: [], anti_slop_smoke: "completed_with_findings", deep_review_smoke: "completed_with_findings", tag_release_publish: false }
+
+updated_at: "2026-10-26"

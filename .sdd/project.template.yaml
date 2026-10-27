@@ -23,6 +23,13 @@ commands:
 
 services: {}
 
+quality_gates:
+  anti_slop:
+    mode: auto
+  deep_review:
+    mode: auto
+    run_on: [STANDARD, STRICT]
+
 validation:
   task_checks: focal
   standard:

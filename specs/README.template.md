@@ -22,6 +22,6 @@ draft → clarifying → approved → implementing → validated → closed
 - Plan: cómo, compatibilidad, rollback y pruebas.
 - Tasks: grafo de unidades verificables con dependencias, riesgo, checks y done_when.
 - Validation: evidencia trazable por requisito.
-- State: checkpoint operativo preciso.
+- State: checkpoint operativo preciso, incluido Quality Gates cuando correspondan.
 
-Una modificación de requisito se propaga `spec → plan → tasks → código → tests → validation`. Las aprobaciones humanas y checkpoints dependen del modo y del riesgo configurado. La operación completa está definida en `.agents/skills/sdd/references/engine.md`; no la dupliques aquí.
+Una modificación de requisito se propaga `spec → plan → tasks → código → tests → validation`. Las aprobaciones humanas, Quality Gates y checkpoints dependen del modo y del riesgo configurado. La operación completa está definida en `.agents/skills/sdd/references/engine.md`; no la dupliques aquí.

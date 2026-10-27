@@ -10,6 +10,7 @@ Estado: draft
 - RF-01: CUANDO <evento>, EL SISTEMA <respuesta verificable>.
 
 ## Requisitos no funcionales
+## Quality Gates aplicables
 ## Casos límite
 ## Fuera de alcance
 ## Criterios de finalización

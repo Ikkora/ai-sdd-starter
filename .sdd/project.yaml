@@ -18,6 +18,7 @@ commands:
   lint: []
   syntax:
     - node --check cli/sdd.js
+    - node --check engine/quality-gates/index.js
   build: []
   smoke:
     - node cli/sdd.js --version
@@ -25,6 +26,13 @@ commands:
     - git diff --check
 
 services: {}
+
+quality_gates:
+  anti_slop:
+    mode: auto
+  deep_review:
+    mode: auto
+    run_on: [STANDARD, STRICT]
 
 validation:
   task_checks: focal

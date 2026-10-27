@@ -1,0 +1,25 @@
+{
+  "id": "deep_review",
+  "display_name": "Deep Review",
+  "kind": "technical_review",
+  "source": "engine/skills/sdd-deep-review/SKILL.md",
+  "reference": "https://github.com/openai/codex/blob/main/codex-rs/skills/src/assets/samples/review-agent/SKILL.md",
+  "default_run_on": ["STANDARD", "STRICT"],
+  "applicability": {
+    "default": true,
+    "any_tags": [],
+    "exclude_tags": ["copy_only", "documentation_only"]
+  },
+  "detection": {
+    "project_paths": [
+      ".agents/skills/sdd-deep-review/SKILL.md"
+    ],
+    "project_markers": []
+  },
+  "invocation": {
+    "type": "agent_skill",
+    "skills": ["sdd-deep-review"],
+    "input": "working tree, commit, or base diff plus enough surrounding code, tests, and call sites",
+    "behavior": "perform a read-only defect-first technical review and return actionable evidence-backed findings"
+  }
+}

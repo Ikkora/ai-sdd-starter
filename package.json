@@ -1,6 +1,6 @@
 {
   "name": "sdd-v2",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "description": "Distribución universal oficial de SDD v2",
   "license": "MIT",
   "type": "commonjs",
@@ -8,8 +8,8 @@
     "sdd": "cli/sdd.js"
   },
   "scripts": {
-    "test": "node --test test/installer.test.js",
-    "check": "node --check cli/sdd.js && node --check test/installer.test.js"
+    "test": "node --test test/*.test.js",
+    "check": "node --check cli/sdd.js && node --check engine/quality-gates/index.js && node --check test/installer.test.js && node --check test/quality-gates.test.js"
   },
   "files": [
     "cli/",

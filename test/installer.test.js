@@ -25,6 +25,10 @@ const installedFiles = [
   'templates/validation.template.md',
   '.agents/skills/sdd/SKILL.md',
   '.agents/skills/sdd/references/engine.md',
+  '.agents/skills/sdd/references/quality-gates.md',
+  '.agents/skills/sdd/references/quality-gates/providers/anti-slop.json',
+  '.agents/skills/sdd/references/quality-gates/providers/deep-review.json',
+  '.agents/skills/sdd-deep-review/SKILL.md',
   '.codex/agents/sdd-planner.toml',
   '.codex/agents/sdd-implementer.toml',
   '.codex/agents/sdd-reviewer.toml',
@@ -33,6 +37,10 @@ const installedFiles = [
 const engineCopies = [
   ['engine/skill/SKILL.md', '.agents/skills/sdd/SKILL.md'],
   ['engine/skill/references/engine.md', '.agents/skills/sdd/references/engine.md'],
+  ['engine/skill/references/quality-gates.md', '.agents/skills/sdd/references/quality-gates.md'],
+  ['engine/quality-gates/providers/anti-slop.json', '.agents/skills/sdd/references/quality-gates/providers/anti-slop.json'],
+  ['engine/quality-gates/providers/deep-review.json', '.agents/skills/sdd/references/quality-gates/providers/deep-review.json'],
+  ['engine/skills/sdd-deep-review/SKILL.md', '.agents/skills/sdd-deep-review/SKILL.md'],
   ['engine/agents/sdd-planner.toml', '.codex/agents/sdd-planner.toml'],
   ['engine/agents/sdd-implementer.toml', '.codex/agents/sdd-implementer.toml'],
   ['engine/agents/sdd-reviewer.toml', '.codex/agents/sdd-reviewer.toml'],
@@ -98,16 +106,16 @@ test('A. init instala SDD v2 en una carpeta vacía', () => {
     const result = runCli(root, 'init', '--name', 'Proyecto Vacío');
 
     assert.equal(result.status, 0, result.stderr);
-    assert.match(result.stdout, /SDD init complete: 16 file\(s\) written\./);
+    assert.match(result.stdout, /SDD init complete: 20 file\(s\) written\./);
     for (const relative of installedFiles) {
       assert.equal(fs.statSync(inDirectory(root, relative)).isFile(), true, relative);
     }
     assert.match(fs.readFileSync(inDirectory(root, '.sdd/project.yaml'), 'utf8'), /name: "Proyecto Vacío"/);
     assert.match(fs.readFileSync(inDirectory(root, 'docs/constitution.md'), 'utf8'), /Constitución de Proyecto Vacío/);
-    assert.equal(fs.readFileSync(inDirectory(root, '.sdd/version'), 'utf8').trim(), '1.0.0');
+    assert.equal(fs.readFileSync(inDirectory(root, '.sdd/version'), 'utf8').trim(), '1.1.0');
     const versionResult = runCli(root, '--version');
     assert.equal(versionResult.status, 0, versionResult.stderr);
-    assert.equal(versionResult.stdout, '1.0.0\n');
+    assert.equal(versionResult.stdout, '1.1.0\n');
   });
 });
 
@@ -123,7 +131,7 @@ test('B. init preserva el código de un repositorio existente', () => {
     assert.equal(result.status, 0, result.stderr);
     assert.equal(fs.readFileSync(inDirectory(root, 'src/app.js'), 'utf8'), application);
     assert.equal(fs.readFileSync(inDirectory(root, 'product/package.json'), 'utf8'), productConfig);
-    assert.equal(fs.existsSync(inDirectory(root, '.agents/skills/sdd/SKILL.md')), true);
+    assert.equal(fs.existsSync(inDirectory(root, '.agents/skills/sdd/references/quality-gates.md')), true);
   });
 });
 
@@ -193,10 +201,7 @@ test('F. una ejecución repetida es idempotente y no reescribe archivos', () => 
     }
     const before = Object.fromEntries(installedFiles.map((relative) => {
       const target = inDirectory(root, relative);
-      return [relative, {
-        hash: hash(fs.readFileSync(target)),
-        mtimeMs: fs.statSync(target).mtimeMs,
-      }];
+      return [relative, { hash: hash(fs.readFileSync(target)), mtimeMs: fs.statSync(target).mtimeMs }];
     }));
 
     const second = runCli(root, 'init', '--name', 'Idempotente');
@@ -211,16 +216,18 @@ test('F. una ejecución repetida es idempotente y no reescribe archivos', () => 
   });
 });
 
-test('G. doctor aprueba una instalación completa', () => {
+test('G. doctor aprueba una instalación completa con Deep Review nativo', () => {
   withTemporaryDirectory((root) => {
     assert.equal(runCli(root, 'init').status, 0);
 
     const result = runCli(root, 'doctor');
 
     assert.equal(result.status, 0, result.stderr);
-    assert.match(result.stdout, /SDD doctor: OK \(10\/10 checks passed\)\./);
-    assert.equal((result.stdout.match(/^OK /gm) || []).length, 10);
-    assert.doesNotMatch(result.stdout, /Node|PHP|Python|MySQL|database|runtime/i);
+    assert.match(result.stdout, /SDD doctor: OK \(14\/14 core checks passed\)\./);
+    assert.match(result.stdout, /NOT DETECTED Anti-Slop: mode=auto/);
+    assert.match(result.stdout, /AVAILABLE Deep Review: mode=auto/);
+    assert.match(result.stdout, /SDD installation: HEALTHY/);
+    assert.doesNotMatch(result.stdout, /PHP|Python|MySQL|database|runtime/i);
   });
 });
 
@@ -233,7 +240,7 @@ test('H. doctor falla con salida útil cuando falta infraestructura SDD', () => 
 
     assert.equal(result.status, 1);
     assert.match(result.stdout, /MISSING reviewer: \.codex\/agents\/sdd-reviewer\.toml/);
-    assert.match(result.stderr, /SDD doctor: FAILED \(9\/10 checks passed\)\./);
+    assert.match(result.stderr, /SDD doctor: FAILED \(13\/14 core checks passed\)\./);
   });
 });
 
@@ -244,10 +251,7 @@ test('I. nombres y stacks distintos conservan idénticos los bytes del motor', (
     fs.mkdirSync(nodeProject);
     fs.mkdirSync(phpProject);
 
-    const canonicalBefore = Object.fromEntries(engineCopies.map(([source]) => [
-      source,
-      fs.readFileSync(inDirectory(repositoryRoot, source)),
-    ]));
+    const canonicalBefore = Object.fromEntries(engineCopies.map(([source]) => [source, fs.readFileSync(inDirectory(repositoryRoot, source))]));
     assert.equal(runCli(nodeProject, 'init', '--name', 'API Node').status, 0);
     assert.equal(runCli(phpProject, 'init', '--name', 'Sistema PHP').status, 0);
 

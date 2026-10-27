@@ -6,6 +6,7 @@ Estado: draft
 ## Arquitectura y áreas afectadas
 ## Persistencia y compatibilidad
 ## Seguridad y privacidad
+## Quality Gates y providers externos
 ## Migración y rollback
 ## Estrategia de validación
 ## Riesgos y mitigaciones

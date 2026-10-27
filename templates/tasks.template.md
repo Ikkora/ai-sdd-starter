@@ -14,6 +14,10 @@
 T01 → T02
 ```
 
+## Quality Gates
+
+Definir provider, aplicabilidad, momento de ejecución y re-check si corresponde.
+
 ## Checkpoints
 
 Definirlos según modo, progreso y `.sdd/project.yaml`.

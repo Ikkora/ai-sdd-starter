@@ -6,6 +6,7 @@ const fs = require('node:fs');
 const path = require('node:path');
 
 const { version: VERSION } = require('../package.json');
+const { inspectOptionalIntegrations, versionAtLeast } = require('../engine/quality-gates');
 
 const distributionRoot = path.resolve(__dirname, '..');
 
@@ -23,12 +24,16 @@ const managedFiles = [
   ['templates/install/templates/validation.template.md', 'templates/validation.template.md'],
   ['engine/skill/SKILL.md', '.agents/skills/sdd/SKILL.md'],
   ['engine/skill/references/engine.md', '.agents/skills/sdd/references/engine.md'],
+  ['engine/skill/references/quality-gates.md', '.agents/skills/sdd/references/quality-gates.md'],
+  ['engine/quality-gates/providers/anti-slop.json', '.agents/skills/sdd/references/quality-gates/providers/anti-slop.json'],
+  ['engine/quality-gates/providers/deep-review.json', '.agents/skills/sdd/references/quality-gates/providers/deep-review.json'],
+  ['engine/skills/sdd-deep-review/SKILL.md', '.agents/skills/sdd-deep-review/SKILL.md'],
   ['engine/agents/sdd-planner.toml', '.codex/agents/sdd-planner.toml'],
   ['engine/agents/sdd-implementer.toml', '.codex/agents/sdd-implementer.toml'],
   ['engine/agents/sdd-reviewer.toml', '.codex/agents/sdd-reviewer.toml'],
 ];
 
-const doctorChecks = [
+const baseDoctorChecks = [
   ['AGENTS.md', 'AGENTS.md', 'file'],
   ['project.yaml', '.sdd/project.yaml', 'file'],
   ['state template', '.sdd/state-template.yaml', 'file'],
@@ -39,6 +44,13 @@ const doctorChecks = [
   ['reviewer', '.codex/agents/sdd-reviewer.toml', 'file'],
   ['specs', 'specs', 'directory'],
   ['constitution', 'docs/constitution.md', 'file'],
+];
+
+const qualityGateDoctorChecks = [
+  ['quality gates', '.agents/skills/sdd/references/quality-gates.md', 'file'],
+  ['Anti-Slop adapter', '.agents/skills/sdd/references/quality-gates/providers/anti-slop.json', 'file'],
+  ['Deep Review adapter', '.agents/skills/sdd/references/quality-gates/providers/deep-review.json', 'file'],
+  ['Deep Review skill', '.agents/skills/sdd-deep-review/SKILL.md', 'file'],
 ];
 
 function usageError(message) {
@@ -220,21 +232,65 @@ function inspectDoctorCheck(root, check) {
   return { label, relative, status: valid ? 'OK' : 'INVALID' };
 }
 
+function readTargetVersion(root) {
+  const installedVersion = path.join(root, '.sdd', 'version');
+  try {
+    return fs.readFileSync(installedVersion, 'utf8').trim();
+  } catch (error) {
+    if (error.code !== 'ENOENT') throw error;
+  }
+  if (path.resolve(root) === distributionRoot) return VERSION;
+  return null;
+}
+
+function readProjectYaml(root) {
+  try {
+    return fs.readFileSync(path.join(root, '.sdd', 'project.yaml'), 'utf8');
+  } catch (error) {
+    if (error.code === 'ENOENT') return '';
+    throw error;
+  }
+}
+
 function runDoctor() {
   const root = process.cwd();
+  const targetVersion = readTargetVersion(root);
+  const doctorChecks = versionAtLeast(targetVersion, '1.1.0')
+    ? [...baseDoctorChecks, ...qualityGateDoctorChecks]
+    : baseDoctorChecks;
   const results = doctorChecks.map((check) => inspectDoctorCheck(root, check));
+
   process.stdout.write(`SDD doctor for ${root}\n`);
+  process.stdout.write('SDD Core\n');
   for (const result of results) {
     process.stdout.write(`${result.status} ${result.label}: ${result.relative}\n`);
   }
 
   const passed = results.filter((result) => result.status === 'OK').length;
-  if (passed === results.length) {
-    process.stdout.write(`SDD doctor: OK (${passed}/${results.length} checks passed).\n`);
+  const integrations = inspectOptionalIntegrations(root, readProjectYaml(root));
+  process.stdout.write('\nQuality Gates\n');
+  for (const integration of integrations) {
+    const mode = `mode=${integration.mode}`;
+    if (integration.required_missing) {
+      process.stdout.write(`REQUIRED MISSING ${integration.display_name}: ${mode}\n`);
+    } else {
+      const source = integration.source ? ` (${integration.source})` : '';
+      process.stdout.write(`${integration.status} ${integration.display_name}: ${mode}${source}\n`);
+    }
+  }
+
+  const requiredMissing = integrations.filter((integration) => integration.required_missing);
+  if (passed === results.length && requiredMissing.length === 0) {
+    process.stdout.write(`\nSDD doctor: OK (${passed}/${results.length} core checks passed).\n`);
+    process.stdout.write('SDD installation: HEALTHY\n');
     return;
   }
 
-  process.stderr.write(`SDD doctor: FAILED (${passed}/${results.length} checks passed).\n`);
+  const reasons = [];
+  if (passed !== results.length) reasons.push(`${passed}/${results.length} core checks passed`);
+  if (requiredMissing.length > 0) reasons.push(`${requiredMissing.length} required integration(s) missing`);
+  process.stderr.write(`\nSDD doctor: FAILED (${reasons.join('; ')}).\n`);
+  process.stderr.write('SDD installation: UNHEALTHY\n');
   process.exitCode = 1;
 }
 

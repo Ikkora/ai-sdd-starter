@@ -32,6 +32,16 @@ current_block:
 completed: []
 pending: []
 
+quality_gates:
+  status: not_configured
+  correction_rounds: 0
+  providers: {}
+  consolidated_findings: []
+  recheck:
+    status: not_required
+    provider_ids: []
+    completed_at: null
+
 validation:
   status: pending
   last_checkpoint: null

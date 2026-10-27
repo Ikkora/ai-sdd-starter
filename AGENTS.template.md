@@ -21,7 +21,7 @@ Toda intención entra por `sdd_run(goal)` o lenguaje natural y aplica **RESUME F
 4. continuar desde `resume.next_action`;
 5. sólo sin trabajo reanudable, clasificar FAST, DEBUG, STANDARD o STRICT.
 
-La skill `.agents/skills/sdd/SKILL.md` contiene el protocolo breve y su `references/engine.md` es la única fuente normativa detallada. No dupliques el motor aquí. Las particularidades viven en `.sdd/project.yaml` o en reglas de dominio de este repositorio.
+La skill `.agents/skills/sdd/SKILL.md` contiene el protocolo breve y su `references/engine.md` es la única fuente normativa detallada. `references/quality-gates.md` define providers externos opcionales. No dupliques el motor aquí. Las particularidades viven en `.sdd/project.yaml` o en reglas de dominio de este repositorio.
 
 ## Reglas locales
 
@@ -32,7 +32,7 @@ La skill `.agents/skills/sdd/SKILL.md` contiene el protocolo breve y su `referen
 
 ## Agentes
 
-- El coordinador controla estado, aprobaciones, bloques y commits.
+- El coordinador controla estado, aprobaciones, bloques, Quality Gates y commits.
 - El planner propone artefactos y grafo; no implementa.
 - El implementer ejecuta una tarea lista; no hace commit ni avanza otra.
 - El reviewer trabaja en sólo lectura y devuelve evidencia independiente.

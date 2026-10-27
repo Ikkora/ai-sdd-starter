@@ -1,6 +1,6 @@
 ---
 name: sdd
-description: Orquesta cambios mediante SDD v2 con RESUME FIRST, modos FAST/DEBUG/STANDARD/STRICT, estado persistente, grafo de tareas, checkpoints y revisión proporcional al riesgo.
+description: Orquesta cambios mediante SDD v2 con RESUME FIRST, modos FAST/DEBUG/STANDARD/STRICT, estado persistente, grafo de tareas, checkpoints, Quality Gates opcionales y revisión proporcional al riesgo.
 ---
 
 # SDD v2
@@ -17,13 +17,15 @@ Entrada conceptual: `sdd_run(goal)`. Una petición equivalente en lenguaje natur
    - **DEBUG:** defecto o regresión que exige diagnóstico basado en evidencia.
    - **STANDARD:** cambio funcional o refactor normal.
    - **STRICT:** cualquier categoría declarada en `risk.strict_mode`.
-5. Para STANDARD, STRICT o una reanudación SDD, lee completamente [references/engine.md](references/engine.md).
+5. Para STANDARD, STRICT o una reanudación SDD, lee completamente [references/engine.md](references/engine.md). Si la spec configura Quality Gates, lee también [references/quality-gates.md](references/quality-gates.md).
 
 ## Invariantes
 
 - No repitas trabajo completado ni limpies un árbol `dirty_expected`.
-- No inventes decisiones funcionales o de riesgo.
+- No inventes decisiones funcionales, APIs de providers ni comandos externos.
 - Autoavanza dentro del alcance aprobado; detente sólo ante una decisión humana real, bloqueo o cambio de alcance.
 - Una tarea lista por invocación del implementer; checks focales por tarea; suite amplia en el checkpoint configurado.
+- Quality Gates opcionales se consolidan antes de una única ronda normal de corrección y un re-check focal.
+- El SDD Reviewer conserva la responsabilidad final sobre spec, arquitectura, reglas y cierre.
 - Reviewer según riesgo; commits por bloque lógico revisado.
 - El coordinador, no los subagentes, actualiza el estado y decide transiciones.
