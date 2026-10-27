@@ -4,18 +4,18 @@ spec:
   id: "003"
   name: "quality-gates"
   path: "specs/003-quality-gates"
-  status: approved
+  status: closed
 
 execution:
   goal: "Integrar SDD Universal v1.1.0 sobre la baseline oficial v1.0.1, preservar historia y completar smokes reales Anti-Slop/Deep Review sin Cursor ni servicios externos."
   mode: STRICT
   risk_profile: [architecture, idempotency, traceability, compatibility, release_accuracy]
-  phase: reviewing
+  phase: closed
 
 progress:
   total_tasks: 14
-  completed_tasks: 13
-  percent: 93
+  completed_tasks: 14
+  percent: 100
 
 task_graph:
   nodes:
@@ -34,17 +34,17 @@ task_graph:
     - { id: T13, depends_on: [T12], areas: [full_scope], risk: [release_accuracy, compatibility], done_when: "re-checks y validación amplia verdes" }
     - { id: T14, depends_on: [T13], areas: [review, git], risk: [architecture, traceability, release_accuracy], done_when: "reviewer aprobado, commits creados y árbol limpio" }
   edges: [T01->T02, T02->T03, T03->T04, T02->T05, T04->T05, T05->T06, T06->T07, T07->T08, T08->T09, T09->T10, T10->T11, T08->T12, T11->T12, T12->T13, T13->T14]
-  ready: [T14]
+  ready: []
   blocked: []
 
 current_block:
   id: final-review
   name: "Reviewer final y cierre técnico"
   task_ids: [T14]
-  status: in_progress
+  status: complete
 
-completed: [T01, T02, T03, T04, T05, T06, T07, T08, T09, T10, T11, T12, T13]
-pending: [T14]
+completed: [T01, T02, T03, T04, T05, T06, T07, T08, T09, T10, T11, T12, T13, T14]
+pending: []
 
 quality_gates:
   status: completed
@@ -83,9 +83,9 @@ quality_gates:
     completed_at: "2026-10-26"
 
 validation:
-  status: passed_pending_final_review
-  last_checkpoint: 75
-  next_checkpoint: 100
+  status: passed
+  last_checkpoint: 100
+  next_checkpoint: null
   evidence:
     - { task: T01, checks: "branch/status; SHA-256 inventory; tag objects and peeled commits", result: "PASS" }
     - { task: T02, checks: "node --check; JSON parse; policy smoke; SHA-256 candidate comparison; diff-check", result: "PASS" }
@@ -113,6 +113,8 @@ validation:
     - { task: T12, checks: "single consolidated round; Anti-Slop punctuation; residual Thermos setting removed; availability_env guard regression 21/21; docs reconciliation; diff-check", result: "CORRECTION_PASS awaiting focal checkpoint review" }
     - { checkpoint: 75, checks: "focal re-review of stale status, superseded scan, residual setting, env guard and Anti-Slop punctuation", result: "APPROVED" }
     - { task: T13, checks: "real Anti-Slop and Deep Review focal rechecks; tests 30/30; syntax; doctor 14/14; pack 26 entries; 9 byte pairs; scans; diff; tag integrity", result: "PASS" }
+    - { task: T14, checks: "independent final Reviewer; staged diff; logical commits; clean-tree verification; no tag/release/npm publish", result: "APPROVED; primary commit 6261a508748b4360c981adfdc40c216c2f233b4c" }
+    - { checkpoint: 100, checks: "T12-T14 corrections, rechecks, broad validation, final Reviewer and Git closure", result: "PASS" }
 
 review:
   required: true
@@ -131,8 +133,8 @@ review:
 
 git:
   base_commit: "b275f69a3591ae5b60c1f8cc01f5f7815431a820"
-  last_commit: "b275f69a3591ae5b60c1f8cc01f5f7815431a820"
-  working_tree: dirty_expected
+  last_commit: "6261a508748b4360c981adfdc40c216c2f233b4c"
+  working_tree: clean
   expected_paths: [specs/003-quality-gates, engine/quality-gates, engine/skills, engine/skill, engine/agents, .agents/skills/sdd, .agents/skills/sdd-deep-review, .codex/agents, .codex/skills, .cursor, .sdd, templates, anti-slop, deep-review, AGENTS.md, AGENTS.template.md, specs/README.template.md, cli/sdd.js, package.json, package-lock.json, test, docs/constitution.md, PLAYBOOK.md, README.md, CHANGELOG.md]
   protected_tags:
     - { name: "v1.0.0", object: "c953774147766cfe7b57753f9b2285607f1c445a", commit: "50524aef31ed0f97c2dd3f5e9de789d8cb73e8f6" }
@@ -145,8 +147,8 @@ human_decisions:
     - { id: "thermos_replacement", type: "architecture", resolution: "Thermos descartado antes del release por dependencia y cuota de Cursor; reemplazado por el provider nativo deep_review con skill local sdd-deep-review.", resolved_at: "2026-10-26" }
 
 resume:
-  next_action: "commit:T14"
-  reason: "Reviewer final independiente APPROVED sin bloqueantes; corresponde crear los commits lógicos, registrar evidencia Git y confirmar árbol limpio."
-  context: { block: "final-validation", candidate: "reference_only", pending_setup: [], anti_slop_smoke: "completed_with_findings", deep_review_smoke: "completed_with_findings", tag_release_publish: false }
+  next_action: null
+  reason: "Spec 003 cerrada técnicamente con Reviewer APPROVED, validación completa y commits lógicos; cualquier tag, release o publicación npm requiere una nueva aprobación humana."
+  context: { block: "closed", candidate: "reference_only", pending_setup: [], anti_slop_smoke: "completed_with_findings", deep_review_smoke: "completed_with_findings", tag_release_publish: false }
 
 updated_at: "2026-10-26"

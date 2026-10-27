@@ -1,6 +1,6 @@
 # Validación: Spec 003
 
-Estado: in_progress
+Estado: passed
 
 ## Evidencia de integración
 
@@ -20,7 +20,7 @@ Estado: in_progress
 | T11 | Smoke real `sdd-deep-review`; working tree completo contra `b275f69`; salida `deep-review/smoke-001-2026-10-26.md`; dos findings normalizados | COMPLETED WITH MEDIUM/LOW FINDINGS |
 | T12 | Ronda consolidada: 10 rayas corregidas; `.cursor/settings.json` retirado; guard `availability_env`; regresión 21/21; docs/status reconciliados | CORRECTION PASS; FOCAL REVIEW APPROVED |
 | T13 | Re-check Anti-Slop y Deep Review; tests 30/30; syntax; doctor 14/14; pack dry-run 26 entries; hashes; scans; diff; tags | PASS |
-| T14 | Reviewer SDD final independiente sobre spec, arquitectura, Quality Gates, evidencia, límites de agentes y Git | APPROVED; COMMITS PENDING |
+| T14 | Reviewer SDD final independiente; staged diff; commit principal `6261a508748b4360c981adfdc40c216c2f233b4c`; cierre Git | APPROVED; PASS |
 
 ## Review inmediato T02
 
@@ -48,11 +48,11 @@ T04–T06 completadas. El primer intento de tests dentro del sandbox falló por 
 
 La auditoría externa del candidato informó 27/27 tests, syntax, doctor 13/13 y pack dry-run verdes. Esa evidencia orienta la integración, pero no sustituye la revalidación en el repositorio oficial ni los smokes reales requeridos por RF-20/RF-21.
 
-## Pendiente obligatorio
+## Cierre técnico
 
-- Commits lógicos y confirmación de árbol limpio para completar T14.
+- T14 completa: Reviewer aprobado, commit principal registrado y cierre de estado preparado en un segundo commit mínimo.
 
-La spec todavía no se considera técnicamente cerrada hasta completar esos pasos. El tag, release y la publicación npm de v1.1.0 requieren una aprobación humana posterior y separada.
+La spec queda técnicamente cerrada. El tag, release y la publicación npm de v1.1.0 requieren una aprobación humana posterior y separada.
 
 ## Estado de Quality Gates
 
@@ -96,3 +96,5 @@ La spec todavía no se considera técnicamente cerrada hasta completar esos paso
 `VEREDICTO: APPROVED`. El Reviewer SDD final independiente no encontró bloqueantes. Confirmó cobertura RF-01..RF-24, ambos smokes reales y sus re-checks, una sola ronda de corrección, separación entre Deep Review y la autoridad del SDD Reviewer, nueve pares canónico/instalado byte-identical, alcance esperado del working tree, tags históricos preservados y ausencia de tag v1.1.0, release o publicación npm.
 
 El Reviewer autorizó marcar T14 completa después de persistir el review, crear uno o como máximo dos commits lógicos, registrar la evidencia Git y confirmar el árbol limpio. No reejecutó providers, correcciones ni suites.
+
+Commit principal creado: `6261a508748b4360c981adfdc40c216c2f233b4c` (`feat: add native quality gates and deep review`). El segundo commit se limita a persistir el cierre de T14 y de la spec; la comprobación final de Git se realiza después de crearlo.

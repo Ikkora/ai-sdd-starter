@@ -91,7 +91,7 @@
   - Checks: re-check Anti-Slop y Deep Review; suite; syntax; doctor; pack; diff; scans; tags históricos.
   - Hecho cuando: los findings corregidos están cerrados y toda evidencia de release está verde.
 
-- [ ] **T14. Reviewer final, commits y cierre técnico.** RF-19..24
+- [x] **T14. Reviewer final, commits y cierre técnico.** RF-19..24
   - Depende de: T13.
   - Áreas: spec completa, arquitectura, evidencia y Git.
   - Riesgo: architecture, traceability, release_accuracy.
