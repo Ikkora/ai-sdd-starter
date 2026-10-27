@@ -1,0 +1,104 @@
+{
+  "schema_version": 1,
+  "id": "javascript-node",
+  "kind": "stack_rules",
+  "display_name": "JavaScript y Node.js",
+  "selectors": [
+    {"field": "language", "values": ["javascript", "typescript"]},
+    {"field": "runtime", "values": ["node", "node.js", "nodejs"]}
+  ],
+  "references": [
+    "https://nodejs.org/api/child_process.html",
+    "https://cheatsheetseries.owasp.org/cheatsheets/Prototype_Pollution_Prevention_Cheat_Sheet.html"
+  ],
+  "rules": [
+    {
+      "id": "js-no-dynamic-code-from-input",
+      "title": "Sin código dinámico desde input",
+      "category": "code_injection",
+      "domains": ["injection"],
+      "tier": "contextual",
+      "applies_when": {"any_change_tags": ["eval", "dynamic_code", "function_constructor"]},
+      "risk": "critical",
+      "evidence": ["Ausencia de eval o Function con datos no confiables", "Alternativa estructurada verificada"],
+      "recommendation": "No evaluar strings controlados; representar operaciones como datos y despacharlas mediante una allowlist."
+    },
+    {
+      "id": "node-child-process-argument-separation",
+      "title": "Procesos Node.js con argumentos separados",
+      "category": "command_injection",
+      "domains": ["injection"],
+      "tier": "contextual",
+      "applies_when": {"any_change_tags": ["child_process", "process_execution", "shell"]},
+      "risk": "critical",
+      "evidence": ["Ejecutable fijo", "Argumentos como array", "Shell deshabilitado salvo justificación"],
+      "recommendation": "Preferir spawn o execFile con argumentos separados y evitar shell o comandos concatenados."
+    },
+    {
+      "id": "js-prototype-key-restriction",
+      "title": "Claves de objeto restringidas ante prototype pollution",
+      "category": "prototype_pollution",
+      "domains": ["input_validation", "deserialization"],
+      "tier": "contextual",
+      "applies_when": {"any_change_tags": ["object_merge", "dynamic_properties", "untrusted_json"]},
+      "risk": "high",
+      "evidence": ["Claves peligrosas rechazadas", "Esquema o allowlist aplicada antes de merge"],
+      "recommendation": "Validar claves antes de asignaciones profundas y evitar merges recursivos de objetos no confiables."
+    },
+    {
+      "id": "js-browser-safe-rendering",
+      "title": "Rendering del navegador sin sinks ejecutables",
+      "category": "xss",
+      "domains": ["output_encoding", "xss"],
+      "tier": "contextual",
+      "applies_when": {"any_change_tags": ["dom_update", "html_output", "browser_content"]},
+      "risk": "high",
+      "evidence": ["Text APIs o escape por defecto", "Sanitización mantenida para HTML permitido"],
+      "recommendation": "Usar APIs de texto o rendering con escape; sanitizar HTML permitido y evitar sinks como innerHTML con input."
+    },
+    {
+      "id": "node-cors-explicit-origins",
+      "title": "CORS Node.js con orígenes explícitos",
+      "category": "cors",
+      "domains": ["apis_cors", "security_configuration"],
+      "tier": "contextual",
+      "applies_when": {"any_capabilities": ["public_api"], "any_change_tags": ["cors", "public_api"]},
+      "risk": "high",
+      "evidence": ["Orígenes permitidos explícitos", "Credenciales, métodos y headers mínimos"],
+      "recommendation": "Configurar CORS para consumidores reales y no combinar credenciales con orígenes amplios o reflejados."
+    },
+    {
+      "id": "node-structured-untrusted-data",
+      "title": "Datos Node.js sin deserialización ejecutable",
+      "category": "deserialization",
+      "domains": ["deserialization"],
+      "tier": "contextual",
+      "applies_when": {"any_change_tags": ["deserialization", "serialization", "ipc"]},
+      "risk": "critical",
+      "evidence": ["Formato de datos validado", "Sin funciones, prototipos o construcción dinámica"],
+      "recommendation": "Aceptar formatos de datos limitados, validar su esquema y evitar paquetes que reconstruyen objetos ejecutables."
+    },
+    {
+      "id": "node-lockfile-and-lifecycle-review",
+      "title": "Dependencias Node.js reproducibles y revisadas",
+      "category": "supply_chain",
+      "domains": ["dependencies_supply_chain"],
+      "tier": "contextual",
+      "applies_when": {"any_change_tags": ["dependencies", "lockfile", "package_scripts"]},
+      "risk": "high",
+      "evidence": ["Lockfile revisado", "Scripts de lifecycle y procedencia evaluados", "Dependencias nuevas justificadas"],
+      "recommendation": "Revisar cambios transitivos y scripts de lifecycle, conservar lockfile y minimizar dependencias."
+    },
+    {
+      "id": "node-outbound-url-policy",
+      "title": "Solicitudes Node.js bajo política de destinos",
+      "category": "ssrf",
+      "domains": ["ssrf"],
+      "tier": "contextual",
+      "applies_when": {"any_capabilities": ["external_apis"], "any_change_tags": ["url_fetch", "external_request", "webhook", "ssrf"]},
+      "risk": "high",
+      "evidence": ["Protocolos y destinos limitados", "Redirecciones y resolución de host controladas"],
+      "recommendation": "Validar URLs y destinos antes de solicitar, restringir protocolos y evitar acceso a redes o metadata internas."
+    }
+  ]
+}

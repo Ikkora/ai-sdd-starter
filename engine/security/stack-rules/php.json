@@ -1,0 +1,93 @@
+{
+  "schema_version": 1,
+  "id": "php",
+  "kind": "stack_rules",
+  "display_name": "PHP",
+  "selectors": [
+    {"field": "language", "values": ["php"]},
+    {"field": "runtime", "values": ["php"]}
+  ],
+  "references": [
+    "https://www.php.net/manual/en/security.php",
+    "https://www.php.net/manual/en/pdo.prepare.php"
+  ],
+  "rules": [
+    {
+      "id": "php-pdo-bound-parameters",
+      "title": "Parámetros PDO separados de la consulta",
+      "category": "sql_injection",
+      "domains": ["injection"],
+      "tier": "contextual",
+      "applies_when": {"any_change_tags": ["sql", "database_query", "pdo"]},
+      "risk": "critical",
+      "evidence": ["Valores no confiables enlazados como parámetros", "Identificadores dinámicos validados mediante allowlist"],
+      "recommendation": "Usar placeholders para valores y no interpolar input en SQL; tratar identificadores dinámicos mediante una allowlist explícita."
+    },
+    {
+      "id": "php-session-cookie-controls",
+      "title": "Sesiones PHP con cookies y rotación seguras",
+      "category": "session_security",
+      "domains": ["sessions_cookies_tokens"],
+      "tier": "contextual",
+      "applies_when": {"any_capabilities": ["authentication"], "any_change_tags": ["php_session", "sessions", "cookies"]},
+      "risk": "high",
+      "evidence": ["ID regenerado al autenticar o elevar privilegios", "Cookies Secure, HttpOnly y SameSite según contexto"],
+      "recommendation": "Rotar el identificador de sesión en cambios de identidad y configurar cookies según el canal y el flujo."
+    },
+    {
+      "id": "php-include-path-allowlist",
+      "title": "Includes y paths PHP restringidos",
+      "category": "path_traversal",
+      "domains": ["path_traversal", "filesystem_access"],
+      "tier": "contextual",
+      "applies_when": {"any_change_tags": ["include", "require", "path_handling", "filesystem"]},
+      "risk": "critical",
+      "evidence": ["Targets internos o allowlist explícita", "Path final contenido en raíz permitida"],
+      "recommendation": "No construir rutas de include con input; mapear identificadores a targets internos y verificar contención."
+    },
+    {
+      "id": "php-upload-non-executable-storage",
+      "title": "Uploads PHP fuera de rutas ejecutables",
+      "category": "file_uploads",
+      "domains": ["file_uploads"],
+      "tier": "contextual",
+      "applies_when": {"any_capabilities": ["file_uploads"], "any_change_tags": ["file_uploads", "move_uploaded_file"]},
+      "risk": "critical",
+      "evidence": ["Tipo y tamaño validados", "Nombre interno generado", "Almacenamiento no ejecutable"],
+      "recommendation": "Validar el archivo, generar un nombre interno y almacenarlo fuera del webroot o sin permisos de ejecución."
+    },
+    {
+      "id": "php-contextual-output-escaping",
+      "title": "Escape PHP según contexto de salida",
+      "category": "xss",
+      "domains": ["output_encoding", "xss"],
+      "tier": "contextual",
+      "applies_when": {"any_change_tags": ["html_output", "template", "browser_content"]},
+      "risk": "high",
+      "evidence": ["Escape al renderizar", "Contexto HTML, atributo, URL o script identificado"],
+      "recommendation": "Escapar al renderizar con la primitiva adecuada y evitar insertar contenido no confiable en contextos ejecutables."
+    },
+    {
+      "id": "php-unserialize-trusted-only",
+      "title": "Deserialización PHP limitada a datos confiables",
+      "category": "deserialization",
+      "domains": ["deserialization"],
+      "tier": "contextual",
+      "applies_when": {"any_change_tags": ["unserialize", "deserialization", "object_stream"]},
+      "risk": "critical",
+      "evidence": ["Datos confiables o formato alternativo", "Clases permitidas restringidas cuando corresponda"],
+      "recommendation": "No usar unserialize con datos no confiables; preferir un formato de datos con esquema limitado."
+    },
+    {
+      "id": "php-process-execution-separation",
+      "title": "Ejecución de procesos PHP sin concatenación",
+      "category": "command_injection",
+      "domains": ["injection"],
+      "tier": "contextual",
+      "applies_when": {"any_change_tags": ["exec", "shell_exec", "system", "process_execution"]},
+      "risk": "critical",
+      "evidence": ["Necesidad de ejecución justificada", "Comando fijo y argumentos controlados"],
+      "recommendation": "Evitar funciones de shell; cuando sean necesarias, usar comandos fijos, argumentos separados y allowlists."
+    }
+  ]
+}

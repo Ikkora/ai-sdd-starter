@@ -1,0 +1,141 @@
+version: 2
+
+spec:
+  id: "004"
+  name: "stack-security-profiles"
+  path: "specs/004-stack-security-profiles"
+  status: active
+
+execution:
+  goal: "Implementar SDD Universal v1.2.0 con Stack Profiles y Security Baseline adaptativa sin acoplar el motor a un stack."
+  mode: STRICT
+  risk_profile: [architecture, security, compatibility, idempotency, traceability, config_parsing, destructive_operations]
+  phase: execute
+
+progress:
+  total_tasks: 12
+  completed_tasks: 3
+  percent: 25
+
+task_graph:
+  nodes:
+    - { id: T01, requires: [RF-01, RF-02, RF-09, RF-10, RF-14, RF-15, RF-16], depends_on: [], areas: [engine/security, specs/004-stack-security-profiles], risk: [architecture, security], checks: [manifest_schema, unique_ids, baseline_coverage], done_when: "declarative policy contract is valid" }
+    - { id: T02, requires: [RF-02, RF-03, RF-04, RF-05], depends_on: [T01], areas: [engine/project-config, test], risk: [security, compatibility, config_parsing], checks: [legacy, custom, invalid_types, inert_parsing], done_when: "config normalizes safely or returns located diagnostics" }
+    - { id: T03, requires: [RF-10, RF-11, RF-12, RF-13, RF-15, RF-16], depends_on: [T01, T02], areas: [engine/security, test], risk: [architecture, security, over_elevation], checks: [profiles, adaptive_risk, no_risk, unknown_stack], done_when: "security evaluation is deterministic and explainable" }
+    - { id: T04, requires: [RF-17, RF-18], depends_on: [T03], areas: [engine/skill, engine/agents, state_templates], risk: [architecture, traceability], checks: [invariants, role_boundaries, state_contract], done_when: "method and roles consume security context without duplication" }
+    - { id: T05, requires: [RF-01, RF-06, RF-07, RF-08, RF-26], depends_on: [T02], areas: [cli/sdd.js, project_templates], risk: [idempotency, destructive_operations, compatibility], checks: [flags, dry_run, force, conflicts, idempotency], done_when: "init generates safe deterministic profiles" }
+    - { id: T06, requires: [RF-19, RF-20, RF-21], depends_on: [T02, T03, T05], areas: [cli/sdd.js, manifests, test], risk: [compatibility, diagnostics], checks: [healthy, invalid_config, missing_manifest, legacy], done_when: "doctor validates SDD config without scanning product code" }
+    - { id: T07, requires: [RF-17, RF-21, RF-22], depends_on: [T04, T06], areas: [templates/install, installed_copies, cli, package], risk: [architecture, idempotency], checks: [byte_identity, manifest_inventory, no_runtime_dependencies], done_when: "init distributes every canonical security artifact" }
+    - { id: T08, requires: [RF-03, RF-04, RF-06, RF-07, RF-08, RF-19, RF-24], depends_on: [T05, T06, T07], areas: [test/installer.test.js, test], risk: [regression, compatibility], checks: [new_legacy_matrix, flags, dry_run, force, idempotency], done_when: "installer and doctor changes have isolated coverage" }
+    - { id: T09, requires: [RF-09, RF-10, RF-11, RF-13, RF-14, RF-15, RF-23, RF-24], depends_on: [T03, T07], areas: [test/fixtures, test], risk: [security, false_confidence], checks: [representative_security_cases, inert_fixtures], done_when: "unsafe patterns require controls without executing payloads" }
+    - { id: T10, requires: [RF-25], depends_on: [T04, T05, T06], areas: [README.md, PLAYBOOK.md, AGENTS.md, docs, templates, engine/references], risk: [documentation_drift, responsibility_duplication], checks: [concept_ownership, custom_examples, anti_slop], done_when: "third parties can configure and distinguish every security role" }
+    - { id: T11, requires: [RF-21, RF-22, RF-27], depends_on: [T07, T08, T09, T10], areas: [package.json, package-lock.json, CHANGELOG.md, .sdd/version], risk: [release_accuracy, traceability], checks: [version_coherence, pack_dry_run, protected_tags], done_when: "v1.2.0 metadata is ready without publication" }
+    - { id: T12, requires: [RF-01, RF-02, RF-03, RF-04, RF-05, RF-06, RF-07, RF-08, RF-09, RF-10, RF-11, RF-12, RF-13, RF-14, RF-15, RF-16, RF-17, RF-18, RF-19, RF-20, RF-21, RF-22, RF-23, RF-24, RF-25, RF-26, RF-27], depends_on: [T11], areas: [repository, specs/004-stack-security-profiles], risk: [release_accuracy, security, compatibility], checks: [full_suite, syntax, doctor, pack, hashes, scans, diff, tags], done_when: "complete traceable evidence is ready for gates and final review" }
+  edges: [T01->T02, T01->T03, T02->T03, T02->T05, T02->T06, T03->T04, T03->T06, T03->T09, T04->T07, T04->T10, T05->T06, T05->T08, T05->T10, T06->T07, T06->T08, T06->T10, T07->T08, T07->T09, T07->T11, T08->T11, T09->T11, T10->T11, T11->T12]
+  ready: [T04, T05]
+  blocked: []
+
+current_block:
+  id: policy-core
+  name: "Contrato, configuración y riesgo adaptativo"
+  task_ids: [T01, T02, T03]
+  status: complete
+
+completed: [T01, T02, T03]
+pending: [T04, T05, T06, T07, T08, T09, T10, T11, T12]
+
+security:
+  profile: null
+  source: legacy_absent
+  status: evaluated_for_spec
+  applicable: true
+  risk_level: high
+  triggers: [architecture, security_policy, config_parsing, destructive_operations]
+  mode:
+    base: STRICT
+    effective: STRICT
+    reason: "Repository strict-mode categories already require STRICT before the v1.2.0 evaluator exists."
+  evidence:
+    status: pending
+
+quality_gates:
+  status: planned
+  correction_rounds: 0
+  providers:
+    anti_slop:
+      mode: auto
+      applicability: true
+      availability: available
+      status: pending_run
+      findings: []
+      recheck: { status: not_required, completed_at: null }
+    deep_review:
+      mode: auto
+      applicability: true
+      availability: available
+      status: pending_run
+      findings: []
+      recheck: { status: not_required, completed_at: null }
+  consolidated_findings: []
+  recheck:
+    status: not_required
+    provider_ids: []
+    completed_at: null
+
+validation:
+  status: pending
+  last_checkpoint: 25
+  next_checkpoint: 50
+  evidence:
+    - { stage: resume_first, checks: "branch, status, tags, base commit and closed states", result: "PASS main clean at v1.1.1 before spec creation" }
+    - { stage: planning, checks: "official OWASP, CWE, NIST and language sources; independent planner", result: "READY_FOR_REVIEW" }
+    - { stage: planning_review, checks: "normative baseline coverage; exact graph coherence; parser boundary; role inputs; diff-check", result: "APPROVED after focal corrections" }
+    - { task: T01, checks: "5 JSON manifests; required fields; 25/25 domains; 50 unique IDs; distinct profiles; diff-check", result: "PASS; immediate review APPROVED after focal correction" }
+    - { task: T02, checks: "syntax; 12 config parser tests; legacy; unsafe YAML; prototype keys; linked parent; diff-check", result: "PASS outside sandbox after spawn EPERM; immediate review APPROVED after focal correction" }
+    - { task: T03, checks: "syntax; 18 security policy tests; profiles; adaptive risk; unknown stack; invalid manifests", result: "PASS outside sandbox" }
+    - { checkpoint: 25, checks: "T01-T03 contract, parser, policy runtime; 30 focal tests; independent review; focal recheck", result: "APPROVED after one consolidated correction" }
+
+review:
+  required: true
+  type: immediate_architecture_security_and_final
+  pending: false
+  status: planning_approved
+  findings:
+    - { stage: planning, severity: high, blocking: true, status: resolved, summary: "RF-09 lacked a stable normative baseline coverage list", location: "specs/004-stack-security-profiles/spec.md" }
+    - { stage: planning, severity: high, blocking: true, status: resolved, summary: "tasks graph disagreed with canonical state dependencies", location: "specs/004-stack-security-profiles/tasks.md; specs/004-stack-security-profiles/state.yaml" }
+    - { task: T01, severity: high, blocking: true, status: resolved, summary: "mode elevation source was ambiguous and could include always-applicable control risk", location: "engine/security/policy.json" }
+    - { task: T01, severity: high, blocking: true, status: resolved, summary: "stack rule composition did not explicitly preserve baseline controls", location: "engine/security/policy.json" }
+    - { task: T02, severity: high, blocking: true, status: resolved, summary: "linked .sdd parent could escape the repository before reading project.yaml", location: "engine/project-config/index.js" }
+    - { task: T02, severity: medium, blocking: true, status: resolved, summary: "plain scalars accepted YAML-invalid colon followed by whitespace", location: "engine/project-config/index.js" }
+    - { checkpoint: 25, severity: high, blocking: true, status: resolved, summary: "global capabilities elevated unrelated changes without change-tag relevance", location: "engine/security/index.js" }
+    - { checkpoint: 25, severity: high, blocking: true, status: resolved, summary: "always-applicable controls forced security review for unrelated changes", location: "engine/security/index.js" }
+  planning:
+    verdict: APPROVED
+    completed_at: "2026-10-27"
+  final:
+    verdict: pending
+  checkpoints:
+    - { percent: 25, verdict: APPROVED, completed_at: "2026-10-27", scope: [T01, T02, T03] }
+
+git:
+  base_commit: "4e8e41f02b7cc18fc4b5e5c5df2413004f11681c"
+  last_commit: null
+  working_tree: dirty_expected
+  expected_paths: [specs/004-stack-security-profiles, engine/security, engine/project-config, engine/skill, engine/agents, .agents, .codex, .sdd, templates, cli/sdd.js, test, README.md, PLAYBOOK.md, CHANGELOG.md, AGENTS.md, AGENTS.template.md, docs/constitution.md, package.json, package-lock.json]
+  protected_tags:
+    - { name: "v1.0.0", object: "c953774147766cfe7b57753f9b2285607f1c445a", commit: "50524aef31ed0f97c2dd3f5e9de789d8cb73e8f6" }
+    - { name: "v1.0.1", object: "b7b49696ceec904958b9617bfb5ae110e9a8b578", commit: "b275f69a3591ae5b60c1f8cc01f5f7815431a820" }
+    - { name: "v1.1.0", object: "317f6e6db6fc6f47c7f88bf0815e7f644fccbe2a", commit: "6c05bf028da23810def63c2771425247477f9a80" }
+    - { name: "v1.1.1", object: "048904dccaf9f251262fcb07487e2bb4b02fc529", commit: "4e8e41f02b7cc18fc4b5e5c5df2413004f11681c" }
+
+human_decisions:
+  pending: []
+  resolved:
+    - { id: anti_slop_mode, resolution: "DURING for planning and execution, applied proportionally." }
+
+resume:
+  next_action: commit_block:policy-core
+  reason: "Checkpoint 25 approved after consolidated correction and focal re-review; policy-core is ready to commit."
+  context: { block: policy-core, completed_tasks: [T01, T02, T03], next_tasks: [T04, T05], anti_slop_mode: during }
+
+updated_at: "2026-10-27T00:00:00-03:00"
