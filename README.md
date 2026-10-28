@@ -1,3 +1,15 @@
+# SDD v2
+
+Distribución universal de Spec-Driven Development v2. Mantiene el motor metodológico separado de la configuración de cada proyecto y ofrece dos caminos equivalentes de adopción: GitHub Template Repository o el CLI `sdd init`.
+
+La versión estable actual es **SDD Universal v1.2.0**, publicada oficialmente en GitHub con su tag y GitHub Release. Incluye Stack Profiles abiertos, Security Baseline adaptativa, perfiles `off`, `standard` y `strict`, capabilities contextuales, reglas específicas por stack y riesgo adaptativo.
+
+GitHub continúa siendo el canal oficial de distribución. npm todavía no fue publicado.
+
+La revisión **1.1.1** corrige exclusivamente la documentación pública sobre ese estado de publicación. No modifica el motor, el CLI, los Quality Gates ni la versión funcional instalada. GitHub es el canal oficial de distribución; npm todavía no fue publicado.
+
+La versión **1.0.1** continúa identificando exclusivamente el hardening de metadata, seguridad y documentación del repositorio sobre la versión funcional `1.0.0`; sus tags e historia permanecen inalterados.
+
 ## 📘 Manual para principiantes
 
 ¿Es tu primera vez usando SDD Universal?
@@ -22,16 +34,6 @@ La guía explica de manera sencilla:
 - problemas frecuentes y cómo resolverlos.
 
 No hace falta ser desarrollador ni conocer previamente la metodología SDD.
-
-# SDD v2
-
-Distribución universal de Spec-Driven Development v2. Mantiene el motor metodológico separado de la configuración de cada proyecto y ofrece dos caminos equivalentes de adopción: GitHub Template Repository o el CLI `sdd init`.
-
-El árbol actual prepara **1.2.0** para revisión, pero esa versión todavía no tiene tag, GitHub Release ni publicación npm. La última versión funcional publicada es **1.1.0**, con Quality Gates extensibles, integración opcional con Anti-Slop y Deep Review nativo de Codex.
-
-La revisión **1.1.1** corrige exclusivamente la documentación pública sobre ese estado de publicación. No modifica el motor, el CLI, los Quality Gates ni la versión funcional instalada. GitHub es el canal oficial de distribución; npm todavía no fue publicado.
-
-La versión **1.0.1** continúa identificando exclusivamente el hardening de metadata, seguridad y documentación del repositorio sobre la versión funcional `1.0.0`; sus tags e historia permanecen inalterados.
 
 ## Elegir un camino de instalación
 
@@ -68,7 +70,7 @@ node <ruta-a-la-distribucion>/cli/sdd.js init
 
 ## Stack Profile y Security Profile
 
-Esta sección documenta v1.2.0 preparada para revisión; la versión estable publicada sigue indicada al inicio. La edición manual de `.sdd/project.yaml` es la vía completa de configuración.
+- `v1.2.0` es la versión estable actual. Está publicada en GitHub con su tag y el release `SDD Universal v1.2.0`. Incluye Stack Profiles, Security Baseline adaptativa y riesgo contextual. No fue publicada en npm.
 
 `.sdd/project.yaml` declara contexto, no una lista cerrada de tecnologías. `stack` acepta componentes y propiedades personalizadas; `capabilities` acepta identificadores booleanos abiertos.
 
