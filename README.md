@@ -1,3 +1,28 @@
+## 📘 Manual para principiantes
+
+¿Es tu primera vez usando SDD Universal?
+
+Preparé una guía completa paso a paso pensada para personas sin experiencia previa con SDD:
+
+👉 [**Manual SDD Universal v1.2.0 para principiantes**](docs/manuals/SDD-Universal-v1.2.0-Guia-Principiantes.pdf)
+
+La guía explica de manera sencilla:
+
+- qué es SDD Universal y para qué sirve;
+- cómo instalarlo desde GitHub;
+- cómo configurar el stack de un proyecto;
+- cómo funcionan los perfiles de seguridad;
+- cómo pedir cambios usando lenguaje natural;
+- qué significan FAST, DEBUG, STANDARD y STRICT;
+- cómo funciona RESUME FIRST;
+- qué son los checkpoints;
+- para qué sirven Anti-Slop y Deep Review;
+- cómo interpretar los mensajes del Coordinator;
+- cómo continuar después de una interrupción;
+- problemas frecuentes y cómo resolverlos.
+
+No hace falta ser desarrollador ni conocer previamente la metodología SDD.
+
 # SDD v2
 
 Distribución universal de Spec-Driven Development v2. Mantiene el motor metodológico separado de la configuración de cada proyecto y ofrece dos caminos equivalentes de adopción: GitHub Template Repository o el CLI `sdd init`.
