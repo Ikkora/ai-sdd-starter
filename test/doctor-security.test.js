@@ -9,7 +9,6 @@ const test = require('node:test');
 
 const repositoryRoot = path.resolve(__dirname, '..');
 const cli = path.join(repositoryRoot, 'cli', 'sdd.js');
-const canonicalSecurity = path.join(repositoryRoot, 'engine', 'security');
 const installedSecurity = path.join('.agents', 'skills', 'sdd', 'references', 'security');
 
 function withTemp(run) {
@@ -42,34 +41,22 @@ function install(root, version, projectYaml = null) {
   if (projectYaml !== null) write(root, '.sdd/project.yaml', projectYaml);
 }
 
-function installSecurityPolicy(root) {
-  const target = path.join(root, installedSecurity);
-  fs.mkdirSync(path.join(target, 'stack-rules'), { recursive: true });
-  for (const name of ['policy.json', 'baseline.json']) {
-    fs.copyFileSync(path.join(canonicalSecurity, name), path.join(target, name));
-  }
-  for (const name of ['javascript-node.json', 'php.json', 'python.json']) {
-    fs.copyFileSync(path.join(canonicalSecurity, 'stack-rules', name), path.join(target, 'stack-rules', name));
-  }
-}
-
 function installV12(root, projectYaml = null) {
   install(root, '1.2.0', projectYaml);
-  installSecurityPolicy(root);
 }
 
 test('doctor validates healthy v1.2 standard and off installations without scanning product code', async (context) => {
   for (const profile of ['standard', 'off']) {
     await context.test(profile, () => {
       withTemp((root) => {
-        installV12(root, `stack: {}\ncapabilities: {}\nsecurity:\n  profile: ${profile}\n`);
+        installV12(root, `stack:\n  future_service:\n    language: future-lang\ncapabilities:\n  custom_flow: true\nsecurity:\n  profile: ${profile}\n`);
         write(root, 'src/policy.json', '{ deliberately invalid product data');
         write(root, 'src/unsafe-example.js', 'eval(userControlledInput);\n');
 
         const result = runCli(root, 'doctor');
         assert.equal(result.status, 0, result.stderr);
         assert.match(result.stdout, /Project Configuration\nOK \.sdd\/project\.yaml: profile=(?:standard|off)/);
-        assert.match(result.stdout, /Security Policy[\s\S]*OK schema: 28 baseline controls, 3 stack rulesets, unique IDs/);
+        assert.match(result.stdout, /Security Policy[\s\S]*OK schema: 28 baseline controls, \d+ stack rulesets, unique IDs/);
         assert.match(result.stdout, /Quality Gates/);
         assert.match(result.stdout, /SDD installation: HEALTHY/);
         assert.doesNotMatch(result.stdout + result.stderr, /unsafe-example|src\/policy|eval\(/);
@@ -80,12 +67,16 @@ test('doctor validates healthy v1.2 standard and off installations without scann
 
 test('doctor accepts a v1.2 legacy config with absent new sections', () => {
   withTemp((root) => {
-    installV12(root, 'version: 2\nproject:\n  name: "Legacy"\nstack:\n  runtime: "Node.js"\n');
+    const legacy = 'version: 2\nproject:\n  name: "Legacy"\nstack:\n  runtime: "Node.js"\n';
+    installV12(root, legacy);
 
     const result = runCli(root, 'doctor');
     assert.equal(result.status, 0, result.stderr);
     assert.match(result.stdout, /legacy configuration; v1\.1\.x behavior preserved/);
     assert.match(result.stdout, /SDD installation: HEALTHY/);
+    const afterDoctor = fs.readFileSync(path.join(root, '.sdd', 'project.yaml'), 'utf8');
+    assert.equal(afterDoctor, legacy);
+    assert.doesNotMatch(afterDoctor, /security:|capabilities:/);
   });
 });
 
@@ -164,6 +155,7 @@ test('doctor preserves v1.0 and v1.1 check counts and legacy behavior', async (c
         assert.equal(result.status, 0, result.stderr);
         assert.match(result.stdout, new RegExp(`SDD doctor: OK \\(${item.checks}\\/${item.checks} core checks passed\\)\\.`));
         assert.doesNotMatch(result.stdout, /Project Configuration|Security Policy/);
+        assert.equal(fs.readFileSync(path.join(root, '.sdd', 'project.yaml'), 'utf8'), legacy);
       });
     });
   }

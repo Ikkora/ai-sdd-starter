@@ -1,0 +1,161 @@
+{
+  "schema_version": 1,
+  "manifest_contract": {
+    "control_required_fields": [
+      "id",
+      "title",
+      "category",
+      "domains",
+      "tier",
+      "applies_when",
+      "risk",
+      "evidence",
+      "recommendation"
+    ],
+    "applicability_keys": [
+      "always",
+      "any_capabilities",
+      "any_change_tags"
+    ],
+    "stack_selector_shape": {
+      "field": "non_empty_string",
+      "values": "non_empty_string_array"
+    },
+    "unknown_stack_behavior": "baseline_only",
+    "stack_rules_composition": "additive_to_baseline_never_replace"
+  },
+  "evaluation_semantics": {
+    "non_empty_applicability_selectors": "any",
+    "capabilities_match_only_when_true": true,
+    "always_true_short_circuits": true,
+    "stack_rules_match": "any_component_any_selector",
+    "control_risk_purpose": "prioritization_review_and_evidence_only",
+    "control_risk_aggregation": "highest_applicable_for_review",
+    "mode_elevation_source": "matched_risk_surfaces_only",
+    "elevation_risk_aggregation": "highest_matched_risk_surface",
+    "duplicate_triggers": "deduplicate"
+  },
+  "risk_order": [
+    "low",
+    "medium",
+    "high",
+    "critical"
+  ],
+  "profiles": {
+    "off": {
+      "enabled": false,
+      "control_tiers": [],
+      "minimum_review_risk": null,
+      "minimum_elevation_risk": null,
+      "require_explicit_not_applicable": false,
+      "evidence_mode": "none"
+    },
+    "standard": {
+      "enabled": true,
+      "control_tiers": [
+        "core",
+        "contextual"
+      ],
+      "minimum_review_risk": "high",
+      "minimum_elevation_risk": "high",
+      "require_explicit_not_applicable": false,
+      "evidence_mode": "applicable_controls"
+    },
+    "strict": {
+      "enabled": true,
+      "control_tiers": [
+        "core",
+        "contextual",
+        "extended"
+      ],
+      "minimum_review_risk": "medium",
+      "minimum_elevation_risk": "high",
+      "require_explicit_not_applicable": true,
+      "evidence_mode": "applicable_controls_and_exceptions"
+    }
+  },
+  "elevation": {
+    "target_mode": "STRICT",
+    "allowed_base_modes": [
+      "FAST",
+      "DEBUG",
+      "STANDARD"
+    ],
+    "requires_applicable_surface": true,
+    "preserve_stricter_mode": true
+  },
+  "risk_surfaces": [
+    {
+      "id": "authentication",
+      "risk": "high",
+      "capabilities": ["authentication"],
+      "change_tags": ["authentication", "sessions", "cookies", "tokens"]
+    },
+    {
+      "id": "authorization",
+      "risk": "high",
+      "capabilities": ["authorization"],
+      "change_tags": ["authorization", "permissions", "roles", "access_control"]
+    },
+    {
+      "id": "secrets_credentials",
+      "risk": "critical",
+      "capabilities": [],
+      "change_tags": ["secrets", "credentials", "key_management"]
+    },
+    {
+      "id": "payments",
+      "risk": "high",
+      "capabilities": ["payments"],
+      "change_tags": ["payments", "financial_transactions"]
+    },
+    {
+      "id": "personal_sensitive_data",
+      "risk": "high",
+      "capabilities": ["personal_data", "sensitive_data"],
+      "change_tags": ["personal_data", "sensitive_data", "privacy"]
+    },
+    {
+      "id": "file_uploads",
+      "risk": "high",
+      "capabilities": ["file_uploads"],
+      "change_tags": ["file_uploads", "untrusted_files"]
+    },
+    {
+      "id": "private_filesystem",
+      "risk": "high",
+      "capabilities": ["private_filesystem"],
+      "change_tags": ["private_storage", "filesystem", "path_handling"]
+    },
+    {
+      "id": "destructive_migrations",
+      "risk": "critical",
+      "capabilities": [],
+      "change_tags": ["destructive_migration", "data_loss", "schema_destructive"]
+    },
+    {
+      "id": "transactions_concurrency",
+      "risk": "high",
+      "capabilities": ["background_jobs"],
+      "change_tags": ["transactions", "concurrency", "race_condition", "background_jobs"]
+    },
+    {
+      "id": "cryptography",
+      "risk": "critical",
+      "capabilities": ["cryptography"],
+      "change_tags": ["cryptography", "encryption", "signatures"]
+    },
+    {
+      "id": "public_api",
+      "risk": "high",
+      "capabilities": ["public_api"],
+      "change_tags": ["public_api", "api_authorization", "cors"]
+    },
+    {
+      "id": "external_apis",
+      "risk": "medium",
+      "capabilities": ["external_apis"],
+      "change_tags": ["external_apis", "ssrf", "webhooks"]
+    }
+  ]
+}

@@ -48,7 +48,7 @@
   - Hecho cuando: doctor separa infraestructura, configuración y providers con diagnósticos accionables.
   - Bloque candidato: `method-cli`.
 
-- [ ] **T07. Distribuir fuentes y copias canónicas.** RF-17, RF-21, RF-22
+- [x] **T07. Distribuir fuentes y copias canónicas.** RF-17, RF-21, RF-22
   - Depende de: T04, T06.
   - Áreas previstas: `templates/install`, `.agents`, `.codex`, manifiesto del CLI y package files.
   - Riesgo: architecture, idempotency.
@@ -56,7 +56,7 @@
   - Hecho cuando: init materializa la política necesaria sin dependencias ni archivos faltantes.
   - Bloque candidato: `distribution-tests`.
 
-- [ ] **T08. Cubrir instalación, doctor y compatibilidad.** RF-03, RF-04, RF-06 a RF-08, RF-19, RF-24
+- [x] **T08. Cubrir instalación, doctor y compatibilidad.** RF-03, RF-04, RF-06 a RF-08, RF-19, RF-24
   - Depende de: T05, T06, T07.
   - Áreas previstas: `test/installer.test.js`, tests de configuración y doctor.
   - Riesgo: regression, compatibility.
@@ -64,7 +64,7 @@
   - Hecho cuando: cada cambio de init y doctor tiene una prueba aislada.
   - Bloque candidato: `distribution-tests`.
 
-- [ ] **T09. Añadir casos de seguridad inertes.** RF-09 a RF-15, RF-23, RF-24
+- [x] **T09. Añadir casos de seguridad inertes.** RF-09 a RF-15, RF-23, RF-24
   - Depende de: T03, T07.
   - Áreas previstas: fixtures declarativos y tests de política.
   - Riesgo: security, false_confidence.

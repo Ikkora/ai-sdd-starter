@@ -15,7 +15,7 @@ Estado: pending
 | Planificación | RESUME FIRST, baseline, spec, research, decisions, plan y grafo | Git, fuentes primarias, planner y Reviewer independientes, re-check focal, `git diff --check` | APROBADO | Ninguno |
 | 25% | T01 a T03 | Manifests, parser, riesgo adaptativo, 30 tests focales y review independiente | APROBADO | Runner Node requiere ejecución fuera del sandbox por `spawn EPERM` |
 | 50% | T04 a T06 | 8 hashes canónico/instalado, syntax, `git diff --check`, 66 tests acumulados, review independiente y Anti-Slop DURING | APROBADO TRAS RE-CHECK | Runner Node requiere ejecución fuera del sandbox por `spawn EPERM` |
-| 75% | T07 a T09 | Distribución, legacy y fixtures | PENDIENTE | N/A |
+| 75% | T07 a T09 | Suite 92/92, Doctor 14/14, pack seco de 38 entradas, hashes dinámicos 5x3, review y Anti-Slop DURING | APROBADO | `npm pack --dry-run` requiere caché fuera del sandbox; metadata sigue en 1.1.0 hasta T11 |
 | 100% | T10 a T12 | Suite, doctor, pack, hashes, gates y review | PENDIENTE | N/A |
 
 ## Evidencia por tarea
@@ -27,6 +27,9 @@ Estado: pending
 - T05: syntax PASS y 34/34 tests focales acumulados de init, flags y configuración. Defaults `stack: {}`, `capabilities: {}` y `security.profile: standard`; flags repetibles, contenido inerte, legacy, dry-run, force, conflictos e idempotencia verificados. Review inmediato y Anti-Slop DURING APROBADOS sin findings.
 - T06: syntax PASS y cobertura focal de Doctor v1.2 para instalaciones `standard` y `off`, configuración legacy, diagnósticos ubicados, manifests faltantes o inválidos y ausencia de escaneo del producto. Los conteos de Doctor v1.0 y v1.1 permanecen en 10 y 14 checks.
 - Checkpoint 50%: 66/66 tests acumulados PASS fuera del sandbox, `git diff --check` PASS y review técnico independiente sin defectos. La única ronda consolidada corrigió persistencia de T06, evidencia del checkpoint y siguiente acción.
+- T07: cinco manifests distribuidos como copias byte-identical entre motor, template y repositorio instalado. Init real, Doctor v1.2, inventario npm y 26/26 regresiones directas PASS. El review corrigió una expectativa de test que cerraba el inventario; el re-check dinámico quedó APROBADO.
+- T08: 39/39 tests focales y regresiones directas PASS. Cubre instalación nueva `standard`, flags `off` y `strict`, componentes y capabilities custom, preflight, dry-run, force, conflictos, idempotencia, Doctor distribuido y proyectos 1.0.x/1.1.x preservados byte a byte.
+- T09: 20/20 casos y regresiones directas PASS. SQL injection, XSS, command injection, paths privados, credenciales, autorización, uploads y sesiones/tokens se representan como datos inertes; stack desconocido conserva baseline sin ruleset específico. Los payloads no se pasan al evaluador ni se ejecutan.
 
 ## Quality Gates
 
@@ -43,7 +46,9 @@ Estado: pending
 - Review inmediato T04: APROBADO; no requiere corrección ni re-check.
 - Review inmediato T05: APROBADO sin findings; flags usan la ruta única de preflight y escritura existente.
 - Checkpoint 50% T04-T06: APROBADO tras re-check focal de la corrección de continuidad.
-- Reviews inmediatos de arquitectura y seguridad: T01-T06 completados.
+- Review inmediato T07: APROBADO tras reemplazar inventario cerrado por mínimos v1.2 y comparación dinámica.
+- Checkpoint 75% T07-T09: APROBADO tras quitar el último conteo cerrado de rulesets y corregir la continuidad documental.
+- Reviews inmediatos de arquitectura y seguridad: T01-T09 completados.
 - Reviewer final: pendiente.
 
 ## Compatibilidad y rollback
@@ -54,6 +59,8 @@ La ausencia de las nuevas secciones conserva comportamiento v1.1.x. `init` nuevo
 
 - Review de planificación: RF-09 no enumeraba su cobertura y el diagrama de tareas discrepaba del estado. Corrección focal aplicada y re-review APROBADO.
 - Checkpoint 50%: el primer review detectó que T06 y la evidencia acumulada aún no estaban persistidas. Se aplicó una corrección documental consolidada sin cambios de implementación.
+- T07: el review detectó un inventario de test cerrado; se conservan mínimos v1.2 y comparación dinámica de todos los manifests.
+- Checkpoint 75%: una expectativa de Doctor aún fijaba tres rulesets y la conclusión documental apuntaba a T07. Ambos residuos se corrigieron en una ronda y el re-check quedó APROBADO.
 
 ## Riesgos residuales
 
@@ -66,4 +73,4 @@ Pendientes.
 
 ## Conclusión
 
-El checkpoint 50% está aprobado tras el re-check focal. La siguiente tarea ejecutable será T07 después del commit lógico del bloque.
+T07-T09 y el checkpoint 75% están aprobados. La siguiente tarea ejecutable será T10 después del commit lógico del bloque.

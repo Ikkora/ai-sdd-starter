@@ -1,0 +1,94 @@
+{
+  "schema_version": 1,
+  "id": "python",
+  "kind": "stack_rules",
+  "display_name": "Python",
+  "selectors": [
+    {"field": "language", "values": ["python"]},
+    {"field": "runtime", "values": ["python", "cpython", "pypy"]}
+  ],
+  "references": [
+    "https://docs.python.org/3/library/security_warnings.html",
+    "https://docs.python.org/3/library/pickle.html",
+    "https://docs.python.org/3/library/subprocess.html#security-considerations"
+  ],
+  "rules": [
+    {
+      "id": "python-no-eval-exec-from-input",
+      "title": "Sin eval o exec sobre input",
+      "category": "code_injection",
+      "domains": ["injection"],
+      "tier": "contextual",
+      "applies_when": {"any_change_tags": ["eval", "exec", "dynamic_code"]},
+      "risk": "critical",
+      "evidence": ["Ausencia de evaluación de strings no confiables", "Alternativa estructurada o allowlist"],
+      "recommendation": "No ejecutar strings controlados; representar las operaciones como datos y usar dispatch explícito."
+    },
+    {
+      "id": "python-pickle-trusted-only",
+      "title": "Pickle limitado a datos confiables",
+      "category": "deserialization",
+      "domains": ["deserialization"],
+      "tier": "contextual",
+      "applies_when": {"any_change_tags": ["pickle", "deserialization", "object_stream"]},
+      "risk": "critical",
+      "evidence": ["Origen confiable demostrado o formato alternativo", "Integridad verificada cuando corresponde"],
+      "recommendation": "No cargar pickle desde fuentes no confiables; preferir un formato de datos con esquema limitado."
+    },
+    {
+      "id": "python-subprocess-without-shell",
+      "title": "Subprocess sin shell ni concatenación",
+      "category": "command_injection",
+      "domains": ["injection"],
+      "tier": "contextual",
+      "applies_when": {"any_change_tags": ["subprocess", "process_execution", "shell"]},
+      "risk": "critical",
+      "evidence": ["shell deshabilitado salvo necesidad documentada", "Ejecutable y argumentos separados"],
+      "recommendation": "Usar subprocess con una lista de argumentos y shell=False; evitar comandos construidos con input."
+    },
+    {
+      "id": "python-yaml-safe-loader",
+      "title": "YAML Python sin construcción arbitraria",
+      "category": "deserialization",
+      "domains": ["deserialization", "security_configuration"],
+      "tier": "contextual",
+      "applies_when": {"any_change_tags": ["yaml", "config_parsing", "deserialization"]},
+      "risk": "critical",
+      "evidence": ["Loader seguro o parser limitado", "Tipos y estructura validados después del parse"],
+      "recommendation": "Usar un loader seguro que no construya objetos arbitrarios y validar la estructura resultante."
+    },
+    {
+      "id": "python-parameterized-database-api",
+      "title": "Queries Python parametrizadas",
+      "category": "sql_injection",
+      "domains": ["injection"],
+      "tier": "contextual",
+      "applies_when": {"any_change_tags": ["sql", "database_query", "db_api"]},
+      "risk": "critical",
+      "evidence": ["Valores pasados por parámetros del driver", "Identificadores dinámicos limitados mediante allowlist"],
+      "recommendation": "Usar parámetros del driver y no interpolar input en SQL; validar identificadores dinámicos por allowlist."
+    },
+    {
+      "id": "python-resolved-path-containment",
+      "title": "Paths Python contenidos tras resolver",
+      "category": "path_traversal",
+      "domains": ["path_traversal", "filesystem_access"],
+      "tier": "contextual",
+      "applies_when": {"any_change_tags": ["pathlib", "filesystem", "path_handling", "archive"]},
+      "risk": "critical",
+      "evidence": ["Path resuelto dentro de raíz permitida", "Symlinks, archives y nombres especiales cubiertos"],
+      "recommendation": "Resolver el path final y comprobar su pertenencia a una raíz explícita antes de operar."
+    },
+    {
+      "id": "python-import-target-allowlist",
+      "title": "Imports dinámicos bajo allowlist",
+      "category": "dynamic_imports",
+      "domains": ["injection", "security_configuration"],
+      "tier": "contextual",
+      "applies_when": {"any_change_tags": ["dynamic_import", "plugin_loading", "module_path"]},
+      "risk": "high",
+      "evidence": ["Identificador mapeado a módulo interno", "sys.path y origen del módulo controlados"],
+      "recommendation": "No importar nombres o paths arbitrarios; mapear identificadores permitidos a módulos internos conocidos."
+    }
+  ]
+}

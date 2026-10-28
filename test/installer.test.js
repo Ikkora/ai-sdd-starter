@@ -7,6 +7,7 @@ const os = require('node:os');
 const path = require('node:path');
 const { spawnSync } = require('node:child_process');
 const test = require('node:test');
+const { parseProjectConfig } = require('../engine/project-config');
 
 const repositoryRoot = path.resolve(__dirname, '..');
 const cli = path.join(repositoryRoot, 'cli', 'sdd.js');
@@ -28,6 +29,11 @@ const installedFiles = [
   '.agents/skills/sdd/references/quality-gates.md',
   '.agents/skills/sdd/references/quality-gates/providers/anti-slop.json',
   '.agents/skills/sdd/references/quality-gates/providers/deep-review.json',
+  '.agents/skills/sdd/references/security/policy.json',
+  '.agents/skills/sdd/references/security/baseline.json',
+  '.agents/skills/sdd/references/security/stack-rules/javascript-node.json',
+  '.agents/skills/sdd/references/security/stack-rules/php.json',
+  '.agents/skills/sdd/references/security/stack-rules/python.json',
   '.agents/skills/sdd-deep-review/SKILL.md',
   '.codex/agents/sdd-planner.toml',
   '.codex/agents/sdd-implementer.toml',
@@ -106,11 +112,17 @@ test('A. init instala SDD v2 en una carpeta vacía', () => {
     const result = runCli(root, 'init', '--name', 'Proyecto Vacío');
 
     assert.equal(result.status, 0, result.stderr);
-    assert.match(result.stdout, /SDD init complete: 20 file\(s\) written\./);
+    assert.match(result.stdout, /SDD init complete: 25 file\(s\) written\./);
     for (const relative of installedFiles) {
       assert.equal(fs.statSync(inDirectory(root, relative)).isFile(), true, relative);
     }
-    assert.match(fs.readFileSync(inDirectory(root, '.sdd/project.yaml'), 'utf8'), /name: "Proyecto Vacío"/);
+    const projectYaml = fs.readFileSync(inDirectory(root, '.sdd/project.yaml'), 'utf8');
+    assert.match(projectYaml, /name: "Proyecto Vacío"/);
+    const parsed = parseProjectConfig(projectYaml);
+    assert.equal(parsed.valid, true, JSON.stringify(parsed.diagnostics));
+    assert.deepEqual(parsed.config.stack, {});
+    assert.deepEqual(parsed.config.capabilities, {});
+    assert.deepEqual(parsed.config.security, { configured: true, profile: 'standard' });
     assert.match(fs.readFileSync(inDirectory(root, 'docs/constitution.md'), 'utf8'), /Constitución de Proyecto Vacío/);
     assert.equal(fs.readFileSync(inDirectory(root, '.sdd/version'), 'utf8').trim(), '1.1.0');
     const versionResult = runCli(root, '--version');

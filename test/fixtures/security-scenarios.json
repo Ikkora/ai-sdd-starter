@@ -1,0 +1,56 @@
+[
+  {
+    "id": "sql-injection",
+    "payload": "SELECT * FROM users WHERE id = '1 OR 1=1'",
+    "input": { "stack": { "backend": { "language": "php" } }, "capabilities": {}, "tags": ["sql"] },
+    "expected": { "controls": ["parameterized-interpreters", "php-pdo-bound-parameters"], "stack_rules": ["php"], "triggers": [], "review": true, "mode": "STANDARD" }
+  },
+  {
+    "id": "cross-site-scripting",
+    "payload": "<img src=x onerror='globalThis.__sddSecurityFixtureSideEffect=true'>",
+    "input": { "stack": { "frontend": { "language": "javascript" } }, "capabilities": {}, "tags": ["html_output"] },
+    "expected": { "controls": ["contextual-output-encoding", "active-content-containment", "js-browser-safe-rendering"], "stack_rules": ["javascript-node"], "triggers": [], "review": true, "mode": "STANDARD" }
+  },
+  {
+    "id": "command-injection",
+    "payload": "$(node -e 'globalThis.__sddSecurityFixtureSideEffect=true')",
+    "input": { "stack": { "worker": { "runtime": "node" } }, "capabilities": {}, "tags": ["command_execution", "child_process"] },
+    "expected": { "controls": ["parameterized-interpreters", "node-child-process-argument-separation"], "stack_rules": ["javascript-node"], "triggers": [], "review": true, "mode": "STANDARD" }
+  },
+  {
+    "id": "path-traversal-private-filesystem",
+    "payload": "../../private/account.txt",
+    "input": { "stack": { "service": { "language": "python" } }, "capabilities": { "private_filesystem": true }, "tags": ["path_handling"] },
+    "expected": { "controls": ["resolved-path-containment", "filesystem-least-access", "python-resolved-path-containment"], "stack_rules": ["python"], "triggers": ["private_filesystem"], "review": true, "mode": "STRICT" }
+  },
+  {
+    "id": "secrets-credentials",
+    "payload": "EXAMPLE_API_KEY=not-a-real-credential",
+    "input": { "stack": {}, "capabilities": {}, "tags": ["credentials"] },
+    "expected": { "controls": ["credentials-outside-source"], "stack_rules": [], "triggers": ["secrets_credentials"], "review": true, "mode": "STRICT" }
+  },
+  {
+    "id": "authorization",
+    "payload": "user requests resource owned by another account",
+    "input": { "stack": {}, "capabilities": { "authorization": true }, "tags": ["authorization"] },
+    "expected": { "controls": ["authorization-per-operation"], "stack_rules": [], "triggers": ["authorization"], "review": true, "mode": "STRICT" }
+  },
+  {
+    "id": "file-upload",
+    "payload": "../../public/shell.php",
+    "input": { "stack": { "backend": { "language": "php" } }, "capabilities": { "file_uploads": true }, "tags": ["file_uploads"] },
+    "expected": { "controls": ["untrusted-upload-isolation", "php-upload-non-executable-storage"], "stack_rules": ["php"], "triggers": ["file_uploads"], "review": true, "mode": "STRICT" }
+  },
+  {
+    "id": "session-token",
+    "payload": "header.payload.signature",
+    "input": { "stack": { "backend": { "runtime": "php" } }, "capabilities": { "authentication": true }, "tags": ["sessions"] },
+    "expected": { "controls": ["session-token-lifecycle", "php-session-cookie-controls"], "stack_rules": ["php"], "triggers": ["authentication"], "review": true, "mode": "STRICT" }
+  },
+  {
+    "id": "unknown-language-baseline",
+    "payload": "future_query(user_input)",
+    "input": { "stack": { "compute": { "language": "future-lang" } }, "capabilities": {}, "tags": ["sql"] },
+    "expected": { "controls": ["parameterized-interpreters"], "stack_rules": [], "triggers": [], "review": true, "mode": "STANDARD" }
+  }
+]

@@ -118,9 +118,10 @@ test('conflict preserves all files and force replaces only managed destinations'
     assert.equal(fs.existsSync(path.join(root, '.sdd')), false);
     assert.equal(fs.readFileSync(path.join(root, 'AGENTS.md'), 'utf8'), 'local rules\n');
 
-    const forced = runCli(root, 'init', '--stack', 'api.language=python', '--capability', 'jobs=true', '--force');
+    const forced = runCli(root, 'init', '--stack', 'api.language=python', '--capability', 'jobs=true', '--security', 'off', '--force');
     assert.equal(forced.status, 0, forced.stderr);
     assert.match(projectConfig(root), /api:\n    language: "python"/);
+    assert.match(projectConfig(root), /security:\n  profile: off/);
     assert.equal(fs.readFileSync(path.join(root, 'product.txt'), 'utf8'), 'keep\n');
   });
 });
