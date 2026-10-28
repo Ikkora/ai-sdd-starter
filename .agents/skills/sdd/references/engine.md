@@ -40,6 +40,22 @@ En una mezcla usa el modo más exigente. Nueva evidencia puede elevar el riesgo,
 
 `stack` es un mapa abierto de componentes y propiedades. `capabilities` es un mapa abierto de identificadores booleanos. No uses enums cerrados de lenguajes, frameworks, bases de datos o capabilities. Un proyecto legacy sin `security` conserva el comportamiento anterior y no recibe controles v1.2.0 implícitos. En instalaciones nuevas, el perfil inicial es `standard`.
 
+Configuración válida con nombres personalizados:
+
+```yaml
+stack:
+  api_custom:
+    language: "future-lang"
+    framework: "custom-framework"
+  storage:
+    engine: "custom-db"
+capabilities:
+  authentication: true
+  custom_workflow: false
+security:
+  profile: standard
+```
+
 Antes de planificar o implementar, el Coordinator carga la política y resuelve:
 
 1. perfil `off`, `standard` o `strict`;
@@ -50,6 +66,14 @@ Antes de planificar o implementar, el Coordinator carga la política y resuelve:
 6. modo efectivo y una razón legible.
 
 `off` desactiva controles y elevación específicos de SDD, pero no las reglas de integridad del proceso. `standard` aplica controles `core` y `contextual`. `strict` agrega controles `extended`, reduce el umbral de review y exige justificar excepciones. Las capabilities globales aportan contexto y seleccionan controles, pero no elevan el modo sin un tag relevante del cambio. Sólo las superficies de riesgo coincidentes por tags pueden recomendar elevación. El Coordinator combina la recomendación con la clasificación existente y conserva el modo más exigente.
+
+Los rulesets específicos son aditivos: agregan controles a la baseline y nunca la sustituyen. Si ningún selector reconoce el stack, aplica sólo la baseline universal. Un lenguaje, framework o componente desconocido no es un error.
+
+`sdd init` acepta `--security <off|standard|strict>` una vez, `--stack <componente>.<campo>=<valor>` de forma repetible y `--capability <nombre>=<true|false>` de forma repetible. Los flags generan contenido declarativo, no ejecutan comandos ni inspeccionan el stack. El comando sigue siendo no interactivo; v1.2.0 no incluye wizard.
+
+Para instalaciones v1.2.0, `sdd doctor` valida la forma de `.sdd/project.yaml` y la infraestructura de policy instalada. No lee código del producto, no busca vulnerabilidades y no ejecuta controles. El perfil `off` desactiva la evaluación, pero la instalación todavía debe conservar manifests válidos.
+
+`security.profile` gobierna la Security Baseline. `quality_gates` gobierna providers como Anti-Slop y Deep Review. Configurar uno no activa, desactiva ni reemplaza al otro.
 
 La Security Baseline no es un SAST y no inspecciona código. Define controles, aplicabilidad y evidencia esperada. El Planner incorpora controles al plan; el Implementer los conoce antes de editar; Deep Review usa el contexto para buscar defectos técnicos concretos introducidos por el diff; el SDD Reviewer verifica cumplimiento, arquitectura, evidencia, excepciones y cierre. Anti-Slop sigue limitado a calidad, complejidad accidental y patrones genéricos.
 

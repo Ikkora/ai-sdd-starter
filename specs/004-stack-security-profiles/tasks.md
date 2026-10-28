@@ -72,7 +72,7 @@
   - Hecho cuando: cada caso selecciona control o revisión sin ejecutar payloads ni afirmar cobertura SAST.
   - Bloque candidato: `distribution-tests`.
 
-- [ ] **T10. Actualizar documentación normativa y pública.** RF-25
+- [x] **T10. Actualizar documentación normativa y pública.** RF-25
   - Depende de: T04, T05, T06.
   - Áreas previstas: README, PLAYBOOK, AGENTS, constitución, referencias, templates y artefactos de spec.
   - Riesgo: documentation_drift, responsibility_duplication.
@@ -80,7 +80,7 @@
   - Hecho cuando: terceros pueden configurar y comprender la política sin leer el código.
   - Bloque candidato: `docs-release`.
 
-- [ ] **T11. Preparar metadata v1.2.0 sin publicar.** RF-21, RF-22, RF-27
+- [x] **T11. Preparar metadata v1.2.0 sin publicar.** RF-21, RF-22, RF-27
   - Depende de: T07, T08, T09, T10.
   - Áreas previstas: package metadata, lockfile, CHANGELOG y `.sdd/version`.
   - Riesgo: release_accuracy, traceability.

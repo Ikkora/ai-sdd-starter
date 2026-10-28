@@ -20,6 +20,9 @@ Toda intención entra por `sdd_run(goal)` o lenguaje natural y aplica **RESUME F
 - El CLI no puede borrar código, asumir un stack ni ejecutar comandos del producto.
 - No se versionan secretos ni rutas personales.
 - El paquete no incorpora dependencias npm de runtime.
+- `stack` y `capabilities` permanecen abiertos; no introducir enums de tecnologías ni capacidades en el core.
+- La Security Baseline y sus rulesets son declarativos. Los rulesets agregan controles y un stack desconocido conserva la baseline universal.
+- `doctor` valida configuración e infraestructura SDD; no escanea el producto ni reemplaza Deep Review.
 - Integraciones externas son opcionales salvo configuración explícita `required`.
 - Cada cambio del instalador o del doctor debe quedar cubierto por pruebas aisladas.
 

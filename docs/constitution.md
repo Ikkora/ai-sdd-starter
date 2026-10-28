@@ -6,15 +6,15 @@ El motor SDD v2 validado es la fuente normativa. Una reorganización o mecanismo
 
 ## 2. Seguridad y privacidad
 
-La distribución no incluye secretos ni rutas personales. El instalador sólo gestiona rutas SDD declaradas, nunca borra código del proyecto, no ejecuta comandos del stack del repositorio destino y no instala tooling externo silenciosamente.
+La distribución no incluye secretos ni rutas personales. El instalador sólo gestiona rutas SDD declaradas, nunca borra código del proyecto, no ejecuta comandos del stack del repositorio destino y no instala tooling externo silenciosamente. La Security Baseline define controles y evidencia; no es un scanner del producto.
 
 ## 3. Arquitectura
 
-El motor, Quality Gates, adapters, templates instalables, CLI y pruebas tienen responsabilidades separadas. Las particularidades de un proyecto y providers externos se expresan mediante configuración y no vuelven al core dependiente de un producto específico.
+El motor, Security Baseline, Quality Gates, templates instalables, CLI y pruebas tienen responsabilidades separadas. Las particularidades de un proyecto y providers externos se expresan mediante configuración y no vuelven al core dependiente de un producto específico. Deep Review busca defectos técnicos; el SDD Reviewer conserva la decisión sobre cumplimiento y cierre.
 
 ## 4. Compatibilidad e idempotencia
 
-La instalación funciona en carpetas vacías y repositorios existentes. Detecta todos los conflictos antes de escribir, no sobrescribe por defecto y una repetición sobre una instalación equivalente no altera archivos. Un proyecto SDD 1.0.x sin configuración de Quality Gates mantiene su comportamiento.
+La instalación funciona en carpetas vacías y repositorios existentes. Detecta todos los conflictos antes de escribir, no sobrescribe por defecto y una repetición sobre una instalación equivalente no altera archivos. Una instalación nueva usa el perfil de seguridad `standard`; un proyecto legacy sin las secciones nuevas conserva su comportamiento anterior.
 
 ## 5. Evidencia y calidad
 

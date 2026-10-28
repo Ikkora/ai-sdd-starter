@@ -30,6 +30,8 @@ Estado: pending
 - T07: cinco manifests distribuidos como copias byte-identical entre motor, template y repositorio instalado. Init real, Doctor v1.2, inventario npm y 26/26 regresiones directas PASS. El review corrigió una expectativa de test que cerraba el inventario; el re-check dinámico quedó APROBADO.
 - T08: 39/39 tests focales y regresiones directas PASS. Cubre instalación nueva `standard`, flags `off` y `strict`, componentes y capabilities custom, preflight, dry-run, force, conflictos, idempotencia, Doctor distribuido y proyectos 1.0.x/1.1.x preservados byte a byte.
 - T09: 20/20 casos y regresiones directas PASS. SQL injection, XSS, command injection, paths privados, credenciales, autorización, uploads y sesiones/tokens se representan como datos inertes; stack desconocido conserva baseline sin ruleset específico. Los payloads no se pasan al evaluador ni se ejecutan.
+- T10: documentación normativa y pública actualizada con Stack Profile abierto, perfiles de seguridad, baseline, límites de Doctor y responsabilidades diferenciadas. Dos pares canónico/instalado, enlaces, ejemplo parseable, installer 9/9 y Anti-Slop copywriting PASS. Review inmediato APROBADO sin findings.
+- T11: metadata, lockfile y versión instalada coherentes en 1.2.0. CLI, init, Doctor, pack seco de 38 entradas, ausencia de dependencias runtime y tags protegidos verificados. Dos expectativas 1.1.x obsoletas del instalador se corrigieron y el re-check quedó 9/9 PASS. No se creó tag, release, tarball ni publicación.
 
 ## Quality Gates
 
@@ -48,6 +50,7 @@ Estado: pending
 - Checkpoint 50% T04-T06: APROBADO tras re-check focal de la corrección de continuidad.
 - Review inmediato T07: APROBADO tras reemplazar inventario cerrado por mínimos v1.2 y comparación dinámica.
 - Checkpoint 75% T07-T09: APROBADO tras quitar el último conteo cerrado de rulesets y corregir la continuidad documental.
+- Bloque T10-T11: APROBADO tras corregir una conclusión de continuidad obsoleta y completar el re-check focal.
 - Reviews inmediatos de arquitectura y seguridad: T01-T09 completados.
 - Reviewer final: pendiente.
 
@@ -73,4 +76,4 @@ Pendientes.
 
 ## Conclusión
 
-T07-T09 y el checkpoint 75% están aprobados. La siguiente tarea ejecutable será T10 después del commit lógico del bloque.
+T10-T11 están completas y el bloque `docs-release` espera su re-check focal antes del commit lógico. La siguiente tarea ejecutable será T12.

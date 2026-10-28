@@ -2,6 +2,32 @@
 
 Todos los cambios relevantes de esta distribución se documentan aquí. El proyecto sigue [Semantic Versioning](https://semver.org/).
 
+## [1.2.0] - 2026-10-28 (preparada, no publicada)
+
+### Added
+
+- Stack Profile y capabilities abiertos, sin enums cerrados de lenguajes, frameworks o capacidades.
+- Security Baseline declarativa con perfiles `off`, `standard` y `strict`, selección proporcional por contexto y rulesets de stack aditivos.
+- Flags repetibles `--stack` y `--capability`, junto con `--security`, para configurar `sdd init` sin interacción.
+- Distribución de la baseline y sus rulesets como copias verificables de las fuentes canónicas.
+
+### Changed
+
+- Las instalaciones nuevas usan `security.profile: standard`; proyectos legacy sin las nuevas secciones conservan el comportamiento v1.1.x.
+- `sdd doctor` valida la configuración del proyecto y la infraestructura de política de seguridad, además de SDD Core y Quality Gates.
+- Stack desconocido conserva la baseline universal sin exigir un adapter ni fallar por ausencia de ruleset específico.
+
+### Security
+
+- La elevación requiere una superficie de riesgo relevante para los tags del cambio; una capability por sí sola no eleva el modo.
+- La baseline define controles, aplicabilidad y evidencia. No escanea el producto, no ejecuta payloads y no se presenta como SAST.
+- Deep Review busca defectos técnicos concretos; el SDD Reviewer conserva la decisión sobre cumplimiento, evidencia, excepciones y cierre.
+
+### Release status
+
+- Metadata y paquete preparados para revisión de v1.2.0.
+- No se creó el tag `v1.2.0`, GitHub Release ni publicación npm.
+
 ## [1.1.1] - 2026-10-26
 
 ### Changed

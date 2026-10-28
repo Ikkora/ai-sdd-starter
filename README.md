@@ -2,7 +2,7 @@
 
 Distribución universal de Spec-Driven Development v2. Mantiene el motor metodológico separado de la configuración de cada proyecto y ofrece dos caminos equivalentes de adopción: GitHub Template Repository o el CLI `sdd init`.
 
-La versión estable actual es **1.1.0**, publicada en GitHub con tag y release. Incorpora Quality Gates extensibles sin hacer depender el core de servicios externos, integración opcional con Anti-Slop y Deep Review nativo de Codex. La spec 003 está cerrada, el Reviewer final aprobó la implementación, los 30 tests pasan y `sdd doctor` informa 14/14 checks HEALTHY con ambos providers AVAILABLE.
+El árbol actual prepara **1.2.0** para revisión, pero esa versión todavía no tiene tag, GitHub Release ni publicación npm. La última versión funcional publicada es **1.1.0**, con Quality Gates extensibles, integración opcional con Anti-Slop y Deep Review nativo de Codex.
 
 La revisión **1.1.1** corrige exclusivamente la documentación pública sobre ese estado de publicación. No modifica el motor, el CLI, los Quality Gates ni la versión funcional instalada. GitHub es el canal oficial de distribución; npm todavía no fue publicado.
 
@@ -29,6 +29,8 @@ El CLI requiere Node.js 18 o posterior y no tiene dependencias npm de runtime. E
 ```console
 sdd init
 sdd init --name "Mi proyecto"
+sdd init --stack backend.language=php --stack database.engine=mysql
+sdd init --capability authentication=true --security strict
 ```
 
 Durante la validación local de esta distribución, el mismo binario puede invocarse sin instalarlo globalmente:
@@ -37,7 +39,41 @@ Durante la validación local de esta distribución, el mismo binario puede invoc
 node <ruta-a-la-distribucion>/cli/sdd.js init
 ```
 
-`init` instala `AGENTS.md`, `.sdd/project.yaml`, el template de estado, la marca de versión, la constitución, los templates de specs, la skill, el motor, el contrato y manifests de Quality Gates, la skill nativa `sdd-deep-review`, y los agentes planner, implementer y reviewer. **No instala Anti-Slop ni terceros.**
+`init` instala `AGENTS.md`, `.sdd/project.yaml`, el template de estado, la marca de versión, la constitución, los templates de specs, la skill, el motor, los manifests de seguridad y Quality Gates, la skill nativa `sdd-deep-review`, y los agentes planner, implementer y reviewer. **No instala Anti-Slop ni terceros.**
+
+## Stack Profile y Security Profile
+
+Esta sección documenta v1.2.0 preparada para revisión; la versión estable publicada sigue indicada al inicio. La edición manual de `.sdd/project.yaml` es la vía completa de configuración.
+
+`.sdd/project.yaml` declara contexto, no una lista cerrada de tecnologías. `stack` acepta componentes y propiedades personalizadas; `capabilities` acepta identificadores booleanos abiertos.
+
+```yaml
+stack:
+  backend:
+    language: "future-lang"
+    framework: "custom-framework"
+  storage:
+    engine: "custom-db"
+capabilities:
+  authentication: true
+  custom_workflow: false
+security:
+  profile: standard
+```
+
+Una instalación nueva crea `stack: {}`, `capabilities: {}` y `security.profile: standard`. Un proyecto legacy sin las secciones nuevas conserva el comportamiento v1.1.x; leerlo o ejecutar `doctor` no lo migra.
+
+Perfiles de seguridad:
+
+- `off` desactiva controles y elevación específicos de la Security Baseline.
+- `standard` aplica controles `core` y `contextual` según el cambio.
+- `strict` agrega controles `extended`, reduce el umbral de review y exige justificar excepciones.
+
+Las capabilities seleccionan contexto y controles, pero no elevan el modo por sí solas. La elevación requiere una superficie de riesgo relevante para los tags del cambio. Los rulesets de stack agregan controles a la baseline y nunca la sustituyen. Un stack desconocido conserva la baseline universal sin producir un error.
+
+La Security Baseline define controles, aplicabilidad y evidencia esperada. No es un SAST y no inspecciona el código del producto. El contrato normativo completo está en [`engine/skill/references/engine.md`](engine/skill/references/engine.md).
+
+`security.profile` gobierna la baseline; `quality_gates` configura providers como Anti-Slop y Deep Review. Son contratos independientes.
 
 ## Comandos
 
@@ -46,14 +82,19 @@ node <ruta-a-la-distribucion>/cli/sdd.js init
 Construye el manifiesto completo y comprueba todos los destinos antes de escribir.
 
 ```console
-sdd init [--name <nombre>] [--dry-run] [--force]
+sdd init [--name <nombre>] [--security <off|standard|strict>] [--stack <componente.campo=valor>]... [--capability <nombre=true|false>]... [--dry-run] [--force]
 ```
 
 - `--name <nombre>` personaliza únicamente los artefactos configurables. El nombre se trata como contenido, nunca como una ruta.
+- `--stack <componente>.<campo>=<valor>` es repetible y trata el valor como contenido escalar.
+- `--capability <nombre>=<true|false>` es repetible.
+- `--security <off|standard|strict>` admite una sola aparición.
 - `--dry-run` muestra el plan sin escribir. Si encuentra conflictos sin `--force`, devuelve código 1.
 - `--force` reemplaza sólo archivos SDD declarados en el manifiesto. Nunca habilita el borrado o reemplazo de código ajeno.
 - Sin `--force`, cualquier conflicto aborta antes de la primera escritura.
 - Una instalación equivalente se clasifica como `UNCHANGED` y no reescribe archivos.
+
+Los flags generan configuración y nunca ejecutan el stack. `init` sigue siendo no interactivo; v1.2.0 no incorpora un wizard.
 
 ### `sdd doctor`
 
@@ -61,10 +102,12 @@ sdd init [--name <nombre>] [--dry-run] [--force]
 sdd doctor
 ```
 
-Separa dos superficies:
+En instalaciones v1.2.0 separa cuatro superficies:
 
 1. **SDD Core:** infraestructura obligatoria de la versión instalada.
-2. **Quality Gates:** Anti-Slop se detecta si está instalado y Deep Review se detecta mediante la skill distribuida.
+2. **Project Configuration:** forma de `stack`, `capabilities` y `security`.
+3. **Security Policy:** presencia y esquema de baseline y rulesets instalados.
+4. **Quality Gates:** Anti-Slop se detecta si está instalado y Deep Review se detecta mediante la skill distribuida.
 
 Los checks core conservan:
 
@@ -78,7 +121,7 @@ Los checks core conservan:
 
 Las instalaciones 1.1.0 agregan el contrato, los manifests y la skill Deep Review a los checks core; instalaciones 1.0.x conservan los 10 checks previos. Anti-Slop ausente en `off` o `auto` no hace fallar el doctor. La ausencia de la skill Deep Review indica una instalación incompleta. Un provider `required` no detectado deja la instalación unhealthy. Para tooling opcional sin ruta portable, `doctor` informa `NOT DETECTED` en vez de afirmar que no está instalado.
 
-Devuelve código 0 para una instalación saludable y código 1 si falta o es inválido un componente core o una integración requerida. No diagnostica Node.js, PHP, Python, MySQL, servicios ni infraestructura del producto.
+Devuelve código 0 para una instalación saludable y código 1 si falta o es inválido un componente core, la configuración, la política de seguridad o una integración requerida. `doctor` valida configuración e infraestructura SDD. No escanea código, busca vulnerabilidades ni diagnostica Node.js, PHP, Python, MySQL, servicios o infraestructura del producto.
 
 ### `sdd --version`
 
@@ -86,7 +129,7 @@ Muestra la versión del CLI:
 
 ```console
 sdd --version
-# 1.1.0
+# 1.2.0
 ```
 
 Cada instalación conserva la misma identificación en `.sdd/version`.
@@ -110,7 +153,7 @@ Modos:
 - `auto`: usar sólo si aplica y está disponible; si falta, registrar `not_available` y continuar.
 - `required`: si aplica y falta, persistir `await_human_setup:<provider>`.
 
-Anti-Slop actúa como filtro contextual para UI, UX, copy, documentación, accesibilidad y otros artefactos con riesgo real de patrones genéricos; no se activa mecánicamente sobre todo. Deep Review usa la skill local `sdd-deep-review` para revisar corrección, seguridad, regresiones y mantenibilidad técnica. No reemplaza al SDD Reviewer.
+Anti-Slop actúa como filtro contextual para UI, UX, copy, documentación, accesibilidad y otros artefactos con riesgo real de patrones genéricos; no se activa mecánicamente sobre todo. Deep Review usa el Stack Profile, capabilities y controles aplicables para buscar defectos técnicos concretos introducidos por el diff. El SDD Reviewer decide cumplimiento de la spec, arquitectura, suficiencia de evidencia, excepciones y cierre. Ninguno reemplaza al otro.
 
 SDD normaliza y deduplica findings, realiza una sola ronda normal de corrección, ejecuta un re-check focal y luego conserva el SDD Reviewer final. Sólo un hallazgo crítico elegible de seguridad, corrupción de datos o equivalente puede romper ese límite.
 
@@ -132,6 +175,7 @@ El contrato completo está en [`engine/skill/references/quality-gates.md`](engin
 ## Estructura de la distribución
 
 - `engine/quality-gates/`: runtime de policy y manifests declarativos de providers.
+- `engine/security/`: loader, baseline y rulesets declarativos de seguridad.
 - `engine/skills/`: skills nativas que distribuye SDD.
 - `engine/skill/`: skill y contratos normativos.
 - `engine/agents/`: definiciones canónicas de planner, implementer y reviewer.
@@ -157,7 +201,7 @@ node cli/sdd.js doctor
 npm pack --dry-run
 ```
 
-La suite usa sólo APIs estándar de Node.js y ejecuta cada escenario en un directorio temporal aislado. La validación simulada actual contiene **30 tests verdes**: 9 del instalador y 21 de Quality Gates, incluidas las regresiones RF-10 y de detección sin `availability_env`. Ambos smokes reales están preservados; la ronda consolidada y los re-checks focales de sus tres findings están completos.
+La suite usa sólo APIs estándar de Node.js y ejecuta instalaciones, configuración, policy y Quality Gates en escenarios aislados. Los fixtures de seguridad son datos inertes: prueban selección de controles, no detección SAST ni ejecución de payloads.
 
 Consulta [PLAYBOOK.md](PLAYBOOK.md) para la operación diaria, [el motor](engine/skill/references/engine.md) para el contrato metodológico y [CHANGELOG.md](CHANGELOG.md) para los cambios de versión.
 
@@ -167,4 +211,5 @@ Consulta [PLAYBOOK.md](PLAYBOOK.md) para la operación diaria, [el motor](engine
 - `v1.0.1` corresponde exclusivamente al hardening de metadata, seguridad y documentación del repositorio; no introduce cambios funcionales en el motor SDD v2 ni en el CLI.
 - `v1.1.0` es la versión funcional estable. Está publicada en GitHub con su tag y el release `SDD Universal v1.1.0`; incluye Quality Gates y la skill nativa `sdd-deep-review`.
 - `v1.1.1` es un parche exclusivamente documental que corrige el estado público de la versión 1.1.0. No contiene cambios funcionales.
+- `v1.2.0` está preparada para revisión en este árbol. No tiene tag, GitHub Release ni publicación npm.
 - GitHub es el canal oficial de distribución. Un tercero puede adoptar SDD mediante el GitHub Template Repository o el CLI local `sdd init`. npm todavía no fue publicado.

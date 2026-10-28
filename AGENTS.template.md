@@ -23,6 +23,12 @@ Toda intención entra por `sdd_run(goal)` o lenguaje natural y aplica **RESUME F
 
 La skill `.agents/skills/sdd/SKILL.md` contiene el protocolo breve y su `references/engine.md` es la única fuente normativa detallada. `references/quality-gates.md` define providers externos opcionales. No dupliques el motor aquí. Las particularidades viven en `.sdd/project.yaml` o en reglas de dominio de este repositorio.
 
+## Contexto de stack y seguridad
+
+Declara en `.sdd/project.yaml` componentes abiertos bajo `stack`, capabilities booleanas y, para instalaciones nuevas, `security.profile: standard`. No agregues estas secciones a un proyecto legacy sólo por leerlo o ejecutar `doctor`.
+
+La Security Baseline selecciona controles y evidencia; no inspecciona código. Deep Review busca defectos técnicos concretos en el diff. El SDD Reviewer verifica cumplimiento, arquitectura, evidencia, excepciones y cierre. Consulta `.agents/skills/sdd/references/engine.md` para la semántica completa.
+
 ## Reglas locales
 
 - Arquitectura: `<reglas>`.

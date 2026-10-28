@@ -124,10 +124,10 @@ test('A. init instala SDD v2 en una carpeta vacía', () => {
     assert.deepEqual(parsed.config.capabilities, {});
     assert.deepEqual(parsed.config.security, { configured: true, profile: 'standard' });
     assert.match(fs.readFileSync(inDirectory(root, 'docs/constitution.md'), 'utf8'), /Constitución de Proyecto Vacío/);
-    assert.equal(fs.readFileSync(inDirectory(root, '.sdd/version'), 'utf8').trim(), '1.1.0');
+    assert.equal(fs.readFileSync(inDirectory(root, '.sdd/version'), 'utf8').trim(), '1.2.0');
     const versionResult = runCli(root, '--version');
     assert.equal(versionResult.status, 0, versionResult.stderr);
-    assert.equal(versionResult.stdout, '1.1.0\n');
+    assert.equal(versionResult.stdout, '1.2.0\n');
   });
 });
 
@@ -228,9 +228,10 @@ test('F. una ejecución repetida es idempotente y no reescribe archivos', () => 
   });
 });
 
-test('G. doctor aprueba una instalación completa con Deep Review nativo', () => {
+test('G. doctor aprueba infraestructura SDD sin inspeccionar archivos del producto', () => {
   withTemporaryDirectory((root) => {
     assert.equal(runCli(root, 'init').status, 0);
+    writeFile(root, 'product/private-runtime.php', 'T11_PRODUCT_DIAGNOSTIC_MARKER\n');
 
     const result = runCli(root, 'doctor');
 
@@ -238,8 +239,9 @@ test('G. doctor aprueba una instalación completa con Deep Review nativo', () =>
     assert.match(result.stdout, /SDD doctor: OK \(14\/14 core checks passed\)\./);
     assert.match(result.stdout, /NOT DETECTED Anti-Slop: mode=auto/);
     assert.match(result.stdout, /AVAILABLE Deep Review: mode=auto/);
+    assert.match(result.stdout, /OK PHP rules: \.agents\/skills\/sdd\/references\/security\/stack-rules\/php\.json/);
     assert.match(result.stdout, /SDD installation: HEALTHY/);
-    assert.doesNotMatch(result.stdout, /PHP|Python|MySQL|database|runtime/i);
+    assert.doesNotMatch(`${result.stdout}\n${result.stderr}`, /product[\\/]private-runtime\.php|T11_PRODUCT_DIAGNOSTIC_MARKER/);
   });
 });
 
