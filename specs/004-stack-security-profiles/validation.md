@@ -1,6 +1,6 @@
 # Validación: Spec 004
 
-Estado: approved-pending-commit
+Estado: closed
 
 ## Evidencia por requisito
 
@@ -32,7 +32,7 @@ Estado: approved-pending-commit
 - T09: 20/20 casos y regresiones directas PASS. SQL injection, XSS, command injection, paths privados, credenciales, autorización, uploads y sesiones/tokens se representan como datos inertes; stack desconocido conserva baseline sin ruleset específico. Los payloads no se pasan al evaluador ni se ejecutan.
 - T10: documentación normativa y pública actualizada con Stack Profile abierto, perfiles de seguridad, baseline, límites de Doctor y responsabilidades diferenciadas. Dos pares canónico/instalado, enlaces, ejemplo parseable, installer 9/9 y Anti-Slop copywriting PASS. Review inmediato APROBADO sin findings.
 - T11: metadata, lockfile y versión instalada coherentes en 1.2.0. CLI, init, Doctor, pack seco de 38 entradas, ausencia de dependencias runtime y tags protegidos verificados. Dos expectativas 1.1.x obsoletas del instalador se corrigieron y el re-check quedó 9/9 PASS. No se creó tag, release, tarball ni publicación.
-- T12: suite 92/92, `npm run check`, Doctor local 14/14, instalación nueva 1.2.0 con Doctor HEALTHY, pack seco de 38 entradas, hashes canónicos/instalados, scans de secretos/rutas/residuos y tags históricos PASS. No se detectaron defectos ni residuos; Quality Gates finales quedan como siguiente acción.
+- T12: suite 92/92, `npm run check`, Doctor local 14/14, instalación nueva 1.2.0 con Doctor HEALTHY, pack seco de 38 entradas, hashes canónicos/instalados, scans de secretos/rutas/residuos y tags históricos PASS. No se detectaron defectos ni residuos; Quality Gates finales y cierre completados.
 
 ## Quality Gates
 
@@ -76,8 +76,8 @@ La ausencia de las nuevas secciones conserva comportamiento v1.1.x. `init` nuevo
 
 ## Criterios de finalización
 
-Implementación, versión 1.2.0, suite, checks, Doctor, pack, hashes, scans, Quality Gates y Reviewer final completos. Pendientes únicamente commit del bloque final y cierre persistido.
+Implementación, versión 1.2.0, suite, checks, Doctor, pack, hashes, scans, Quality Gates, Reviewer final y cierre protocolario completos.
 
 ## Conclusión
 
-T01-T12, Quality Gates y Reviewer final están aprobados. La siguiente acción es `commit_block:final-validation`.
+T01-T12, Quality Gates y Reviewer final están aprobados. La spec 004 queda cerrada sin acción SDD pendiente; tag, GitHub Release y publicación npm requieren una decisión humana posterior.

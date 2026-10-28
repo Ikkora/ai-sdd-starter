@@ -4,13 +4,13 @@ spec:
   id: "004"
   name: "stack-security-profiles"
   path: "specs/004-stack-security-profiles"
-  status: active
+  status: closed
 
 execution:
   goal: "Implementar SDD Universal v1.2.0 con Stack Profiles y Security Baseline adaptativa sin acoplar el motor a un stack."
   mode: STRICT
   risk_profile: [architecture, security, compatibility, idempotency, traceability, config_parsing, destructive_operations]
-  phase: commit
+  phase: closed
 
 progress:
   total_tasks: 12
@@ -39,7 +39,7 @@ current_block:
   id: final-validation
   name: "Validación final, Quality Gates y cierre"
   task_ids: [T12]
-  status: approved
+  status: complete
 
 completed: [T01, T02, T03, T04, T05, T06, T07, T08, T09, T10, T11, T12]
 pending: []
@@ -99,7 +99,7 @@ quality_gates:
     completed_at: "2026-10-28"
 
 validation:
-  status: final_approved_pending_commit
+  status: complete
   last_checkpoint: 100
   next_checkpoint: null
   evidence:
@@ -158,8 +158,8 @@ review:
 
 git:
   base_commit: "4e8e41f02b7cc18fc4b5e5c5df2413004f11681c"
-  last_commit: "2fe6b3765933d781aeac014b5af4285b5b2a7189"
-  working_tree: dirty_expected
+  last_commit: "6e3dc3f516d90d73604e4343ba4a2cf52295602e"
+  working_tree: clean
   expected_paths: [specs/004-stack-security-profiles, engine/security, engine/project-config, engine/skill, engine/agents, .agents, .codex, .sdd, templates, cli/sdd.js, test, README.md, PLAYBOOK.md, CHANGELOG.md, AGENTS.md, AGENTS.template.md, docs/constitution.md, package.json, package-lock.json]
   protected_tags:
     - { name: "v1.0.0", object: "c953774147766cfe7b57753f9b2285607f1c445a", commit: "50524aef31ed0f97c2dd3f5e9de789d8cb73e8f6" }
@@ -173,8 +173,8 @@ human_decisions:
     - { id: anti_slop_mode, resolution: "DURING for planning and execution, applied proportionally." }
 
 resume:
-  next_action: commit_block:final-validation
-  reason: "Checkpoint 100 and the independent final Reviewer are approved; commit the reviewed final corrections."
-  context: { block: final-validation, previous_commit: 2fe6b37, completed_tasks: [T01, T02, T03, T04, T05, T06, T07, T08, T09, T10, T11, T12], anti_slop_mode: during }
+  next_action: null
+  reason: "Spec 004 is closed with checkpoint 100 approved and no pending protocol action."
+  context: { block: final-validation, final_implementation_commit: 6e3dc3f, completed_tasks: [T01, T02, T03, T04, T05, T06, T07, T08, T09, T10, T11, T12], anti_slop_mode: during }
 
 updated_at: "2026-10-28T00:00:00-03:00"
