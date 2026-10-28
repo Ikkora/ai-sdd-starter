@@ -146,6 +146,8 @@ Fuente canónica: `engine/skills/sdd-deep-review/SKILL.md`. Referencia arquitect
 
 Deep Review inspecciona un working tree, un commit o una comparación contra base. El modo working tree incluye staged, unstaged y archivos untracked relevantes. La revisión es read-only, defect-first y limitada al cambio.
 
+Cuando existe contexto de seguridad, el Coordinator entrega Stack Profile, capabilities, controles de baseline y reglas de stack aplicables. Deep Review usa ese contexto para priorizar call paths y comprobar defectos técnicos concretos; no vuelve a decidir aplicabilidad, cumplimiento de la spec, suficiencia de evidencia ni cierre.
+
 Sus categorías cubren correctness, regresiones, seguridad, mantenibilidad, complejidad, boundaries, ownership y developer experience técnicamente relevante. No evalúa cumplimiento final de la spec, decisiones de producto, autoridad arquitectónica final ni cierre SDD.
 
 `sdd init` instala la skill local versionada. La detección es determinista y no requiere Cursor, APIs externas, claves ni cuotas.

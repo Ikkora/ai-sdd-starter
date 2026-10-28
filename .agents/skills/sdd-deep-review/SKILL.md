@@ -32,9 +32,10 @@ Si el target o la baseline no se pueden resolver, informa el bloqueo. No sustitu
 ## Revisar
 
 1. Lee las instrucciones `AGENTS.md` aplicables.
-2. Recorre el cambio completo y suficiente código circundante para entender cada path.
-3. Comprueba tests, call sites, contratos y flujos afectados antes de afirmar un defecto.
-4. Continúa después del primer hallazgo.
+2. Si el Coordinator entrega contexto de seguridad, consume el Stack Profile, capabilities, controles de baseline y reglas de stack aplicables. Úsalos para priorizar superficies y call paths; no vuelvas a decidir aplicabilidad ni suficiencia de evidencia.
+3. Recorre el cambio completo y suficiente código circundante para entender cada path.
+4. Comprueba tests, call sites, contratos y flujos afectados antes de afirmar un defecto.
+5. Continúa después del primer hallazgo.
 
 Registra un finding sólo si cumple todo lo siguiente:
 

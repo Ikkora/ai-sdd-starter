@@ -1,6 +1,6 @@
 # Motor SDD v2
 
-Este archivo es la única fuente normativa detallada del starter. La configuración de cada repositorio vive en `.sdd/project.yaml`; el estado de cada ejecución vive en la spec activa. La capa genérica de providers vive en [quality-gates.md](quality-gates.md).
+Este archivo es la única fuente normativa detallada del starter. La configuración de cada repositorio vive en `.sdd/project.yaml`; el estado de cada ejecución vive en la spec activa. La capa genérica de providers vive en [quality-gates.md](quality-gates.md). Los manifests bajo `engine/security/` expresan la política y los controles como datos, pero este contrato define cómo SDD los usa.
 
 ## 1. Máquina de estados
 
@@ -36,6 +36,23 @@ El coordinador actualiza `state.yaml` de forma atómica después de cada transic
 
 En una mezcla usa el modo más exigente. Nueva evidencia puede elevar el riesgo, nunca ocultarlo. Registra el motivo en `execution.risk_profile`.
 
+### 3.1 Contexto de seguridad adaptativo
+
+`stack` es un mapa abierto de componentes y propiedades. `capabilities` es un mapa abierto de identificadores booleanos. No uses enums cerrados de lenguajes, frameworks, bases de datos o capabilities. Un proyecto legacy sin `security` conserva el comportamiento anterior y no recibe controles v1.2.0 implícitos. En instalaciones nuevas, el perfil inicial es `standard`.
+
+Antes de planificar o implementar, el Coordinator carga la política y resuelve:
+
+1. perfil `off`, `standard` o `strict`;
+2. controles de baseline aplicables;
+3. reglas de stack aplicables, siempre aditivas a la baseline;
+4. riesgo de controles para priorización, review y evidencia;
+5. superficies de riesgo que coinciden con tags reales del cambio;
+6. modo efectivo y una razón legible.
+
+`off` desactiva controles y elevación específicos de SDD, pero no las reglas de integridad del proceso. `standard` aplica controles `core` y `contextual`. `strict` agrega controles `extended`, reduce el umbral de review y exige justificar excepciones. Las capabilities globales aportan contexto y seleccionan controles, pero no elevan el modo sin un tag relevante del cambio. Sólo las superficies de riesgo coincidentes por tags pueden recomendar elevación. El Coordinator combina la recomendación con la clasificación existente y conserva el modo más exigente.
+
+La Security Baseline no es un SAST y no inspecciona código. Define controles, aplicabilidad y evidencia esperada. El Planner incorpora controles al plan; el Implementer los conoce antes de editar; Deep Review usa el contexto para buscar defectos técnicos concretos introducidos por el diff; el SDD Reviewer verifica cumplimiento, arquitectura, evidencia, excepciones y cierre. Anti-Slop sigue limitado a calidad, complejidad accidental y patrones genéricos.
+
 ## 4. Artefactos, gates e intervención humana
 
 - `spec.md` define qué y por qué, casos límite, fuera de alcance y criterios verificables.
@@ -43,6 +60,7 @@ En una mezcla usa el modo más exigente. Nueva evidencia puede elevar el riesgo,
 - `tasks.md` convierte el plan en un grafo de unidades verificables.
 - `validation.md` conserva evidencia, no afirmaciones.
 - `quality_gates` en estado conserva disponibilidad, aplicabilidad, findings normalizados, corrección y re-check.
+- `security`, cuando aplica, conserva perfil, riesgo, triggers, controles, reglas de stack, modo efectivo, evidencia y excepciones.
 
 Requiere intervención humana sólo para una decisión funcional, ambigüedad material, aprobación exigida por el modo, expansión de alcance, operación destructiva, setup/repair externo o riesgo no aceptado. No preguntes si debes correr tests, avanzar una tarea lista, pedir reviewer, ejecutar un provider `auto` aplicable y disponible, o hacer un commit que ya exige la política.
 
@@ -75,11 +93,12 @@ Agrupa tareas en bloques por resultado coherente, dependencia y superficie compa
 El implementer recibe exactamente una tarea lista y:
 
 1. valida configuración, estado, dependencia y árbol;
-2. preserva el trabajo existente;
-3. implementa el mínimo conforme a spec y plan;
-4. se detiene ante contradicción, decisión faltante o cambio inesperado;
-5. ejecuta los checks focales declarados;
-6. devuelve evidencia, sin commit, sin actualizar estado y sin iniciar otra tarea.
+2. carga los controles y reglas de seguridad aplicables ya resueltos;
+3. preserva el trabajo existente;
+4. implementa el mínimo conforme a spec, plan y controles aplicables;
+5. se detiene ante contradicción, decisión faltante o cambio inesperado;
+6. ejecuta los checks focales declarados;
+7. devuelve evidencia y excepciones justificadas, sin commit, sin actualizar estado y sin iniciar otra tarea.
 
 El coordinador inspecciona la evidencia, actualiza `completed`, `pending`, grafo, progreso, bloque y siguiente acción. Dentro de un alcance aprobado autoavanza a la siguiente tarea lista hasta un checkpoint, Quality Gate, review, bloqueo o decisión humana real.
 
@@ -143,6 +162,8 @@ Cierra cuando todos los requisitos tienen evidencia, los providers `required` ap
 ## 11. Contrato de estado
 
 El estado debe conservar, como mínimo: spec, objetivo, modo, riesgo, fase, progreso, grafo, bloque, completadas, pendientes, validación, review, Git, decisiones humanas y reanudación. Cuando una spec usa providers, agrega `quality_gates` según [quality-gates.md](quality-gates.md).
+
+Agrega `security` sólo cuando el proyecto configure un perfil o la spec evalúe seguridad. El bloque mínimo conserva `profile`, `source`, `status`, `applicable`, `risk_level`, `control_risk_level`, `triggers`, `control_ids`, `stack_rule_ids`, `mode.base`, `mode.effective`, `mode.reason`, `evidence.status`, `evidence.items` y `exceptions`. Para `off` basta el perfil y estado `off`. No agregues el bloque de forma retroactiva a estados legacy que no evalúan seguridad.
 
 `resume.next_action` siempre es ejecutable, por ejemplo:
 

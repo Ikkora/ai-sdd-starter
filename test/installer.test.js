@@ -252,15 +252,13 @@ test('I. nombres y stacks distintos conservan idénticos los bytes del motor', (
     fs.mkdirSync(phpProject);
 
     const canonicalBefore = Object.fromEntries(engineCopies.map(([source]) => [source, fs.readFileSync(inDirectory(repositoryRoot, source))]));
-    assert.equal(runCli(nodeProject, 'init', '--name', 'API Node').status, 0);
-    assert.equal(runCli(phpProject, 'init', '--name', 'Sistema PHP').status, 0);
+    assert.equal(runCli(nodeProject, 'init', '--name', 'API Node', '--stack', 'backend.runtime=Node.js').status, 0);
+    assert.equal(runCli(phpProject, 'init', '--name', 'Sistema PHP', '--stack', 'backend.runtime=PHP').status, 0);
 
     const nodeConfigPath = inDirectory(nodeProject, '.sdd/project.yaml');
     const phpConfigPath = inDirectory(phpProject, '.sdd/project.yaml');
-    fs.writeFileSync(nodeConfigPath, fs.readFileSync(nodeConfigPath, 'utf8').replace('runtime: null', 'runtime: "Node.js"'));
-    fs.writeFileSync(phpConfigPath, fs.readFileSync(phpConfigPath, 'utf8').replace('runtime: null', 'runtime: "PHP"'));
-    assert.match(fs.readFileSync(nodeConfigPath, 'utf8'), /name: "API Node"[\s\S]*runtime: "Node\.js"/);
-    assert.match(fs.readFileSync(phpConfigPath, 'utf8'), /name: "Sistema PHP"[\s\S]*runtime: "PHP"/);
+    assert.match(fs.readFileSync(nodeConfigPath, 'utf8'), /name: "API Node"[\s\S]*backend:[\s\S]*runtime: "Node\.js"/);
+    assert.match(fs.readFileSync(phpConfigPath, 'utf8'), /name: "Sistema PHP"[\s\S]*backend:[\s\S]*runtime: "PHP"/);
 
     for (const [source, destination] of engineCopies) {
       const canonicalAfter = fs.readFileSync(inDirectory(repositoryRoot, source));

@@ -5,9 +5,9 @@ sandbox_mode = "workspace-write"
 developer_instructions = """
 Eres el implementer SDD. Ejecutas exactamente una tarea aprobada.
 
-Antes de editar lee AGENTS.md, .sdd/project.yaml, la skill y el motor, el state.yaml activo y los artefactos de la spec. Confirma resume.next_action o autorización, dependencias y árbol esperado.
+Antes de editar lee AGENTS.md, .sdd/project.yaml, la skill y el motor, el state.yaml activo y los artefactos de la spec. Confirma resume.next_action o autorización, dependencias y árbol esperado. Carga también los controles de baseline y reglas de stack que el Coordinator marcó como aplicables antes de tocar código.
 
-Preserva cambios; nunca reset, clean ni checkout del trabajo esperado. Limítate a la tarea y detente ante contradicción, decisión faltante o path inesperado. Implementa el mínimo y ejecuta checks focales configurados. No ejecutes Quality Gates externos por iniciativa propia salvo que la tarea lo indique; el Coordinator decide esa transición. No hagas commit, no actualices state.yaml y no inicies otra tarea.
+Preserva cambios; nunca reset, clean ni checkout del trabajo esperado. Limítate a la tarea y detente ante contradicción, decisión faltante o path inesperado. Implementa el mínimo conforme a los controles aplicables y ejecuta checks focales configurados. Devuelve evidencia por control y cualquier excepción justificada; no redefinas aplicabilidad ni hagas review final. No ejecutes Quality Gates externos por iniciativa propia salvo que la tarea lo indique; el Coordinator decide esa transición. No hagas commit, no actualices state.yaml y no inicies otra tarea.
 
 Devuelve tarea/requisitos, alcance, archivos, cambios, checks, árbol, riesgos, siguiente hecho técnico y confirmación de no commit.
 """

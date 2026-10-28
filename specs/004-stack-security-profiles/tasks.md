@@ -24,7 +24,7 @@
   - Hecho cuando: el resultado es determinista, explicable y no eleva casos no aplicables.
   - Bloque candidato: `policy-core`.
 
-- [ ] **T04. Integrar política en motor, roles y estado.** RF-17, RF-18
+- [x] **T04. Integrar política en motor, roles y estado.** RF-17, RF-18
   - Depende de: T03.
   - Áreas previstas: `engine/skill`, `engine/agents`, `.sdd/state-template.yaml`, copias instalables.
   - Riesgo: architecture, traceability.
@@ -32,7 +32,7 @@
   - Hecho cuando: los actores reciben contexto proporcional sin duplicar Baseline, Deep Review o Reviewer.
   - Bloque candidato: `method-cli`.
 
-- [ ] **T05. Extender `sdd init` con flags declarativos.** RF-01, RF-06 a RF-08, RF-26
+- [x] **T05. Extender `sdd init` con flags declarativos.** RF-01, RF-06 a RF-08, RF-26
   - Depende de: T02.
   - Áreas previstas: `cli/sdd.js`, templates de proyecto.
   - Riesgo: idempotency, destructive_operations, compatibility.
@@ -40,7 +40,7 @@
   - Hecho cuando: flags y edición manual producen configuración determinista sin ejecución del stack.
   - Bloque candidato: `method-cli`.
 
-- [ ] **T06. Extender doctor sin convertirlo en scanner.** RF-19 a RF-21
+- [x] **T06. Extender doctor sin convertirlo en scanner.** RF-19 a RF-21
   - Depende de: T02, T03, T05.
   - Áreas previstas: `cli/sdd.js`, manifests gestionados, tests focales.
   - Riesgo: compatibility, diagnostics.

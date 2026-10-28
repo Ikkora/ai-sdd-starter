@@ -6,11 +6,12 @@ project:
   specs_root: specs
   memory: "<path-to-operational-memory>"
 
-stack:
-  application: "<optional>"
-  runtime: "<optional>"
-  database: "<optional>"
-  frontend: "<optional>"
+stack: {}
+
+capabilities: {}
+
+security:
+  profile: standard
 
 commands:
   test: []

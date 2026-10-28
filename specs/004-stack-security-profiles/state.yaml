@@ -14,8 +14,8 @@ execution:
 
 progress:
   total_tasks: 12
-  completed_tasks: 3
-  percent: 25
+  completed_tasks: 6
+  percent: 50
 
 task_graph:
   nodes:
@@ -32,17 +32,17 @@ task_graph:
     - { id: T11, requires: [RF-21, RF-22, RF-27], depends_on: [T07, T08, T09, T10], areas: [package.json, package-lock.json, CHANGELOG.md, .sdd/version], risk: [release_accuracy, traceability], checks: [version_coherence, pack_dry_run, protected_tags], done_when: "v1.2.0 metadata is ready without publication" }
     - { id: T12, requires: [RF-01, RF-02, RF-03, RF-04, RF-05, RF-06, RF-07, RF-08, RF-09, RF-10, RF-11, RF-12, RF-13, RF-14, RF-15, RF-16, RF-17, RF-18, RF-19, RF-20, RF-21, RF-22, RF-23, RF-24, RF-25, RF-26, RF-27], depends_on: [T11], areas: [repository, specs/004-stack-security-profiles], risk: [release_accuracy, security, compatibility], checks: [full_suite, syntax, doctor, pack, hashes, scans, diff, tags], done_when: "complete traceable evidence is ready for gates and final review" }
   edges: [T01->T02, T01->T03, T02->T03, T02->T05, T02->T06, T03->T04, T03->T06, T03->T09, T04->T07, T04->T10, T05->T06, T05->T08, T05->T10, T06->T07, T06->T08, T06->T10, T07->T08, T07->T09, T07->T11, T08->T11, T09->T11, T10->T11, T11->T12]
-  ready: [T04, T05]
+  ready: [T07, T10]
   blocked: []
 
 current_block:
-  id: policy-core
-  name: "Contrato, configuración y riesgo adaptativo"
-  task_ids: [T01, T02, T03]
+  id: method-cli
+  name: "Integración metodológica, init y doctor"
+  task_ids: [T04, T05, T06]
   status: complete
 
-completed: [T01, T02, T03]
-pending: [T04, T05, T06, T07, T08, T09, T10, T11, T12]
+completed: [T01, T02, T03, T04, T05, T06]
+pending: [T07, T08, T09, T10, T11, T12]
 
 security:
   profile: null
@@ -50,13 +50,21 @@ security:
   status: evaluated_for_spec
   applicable: true
   risk_level: high
+  control_risk_level: critical
   triggers: [architecture, security_policy, config_parsing, destructive_operations]
+  control_ids: [credentials-outside-source, resolved-path-containment, secure-configuration-defaults]
+  stack_rule_ids: [javascript-node]
   mode:
     base: STRICT
     effective: STRICT
     reason: "Repository strict-mode categories already require STRICT before the v1.2.0 evaluator exists."
   evidence:
-    status: pending
+    status: partial
+    items:
+      - "T04 persists evaluated profile, applicable controls, matched rules, effective mode, evidence and exceptions without merging review roles."
+      - "T05 generates standard by default and preserves explicit off or strict as declarative project content."
+      - "T06 validates project configuration and installed policy manifests without scanning product code."
+  exceptions: []
 
 quality_gates:
   status: planned
@@ -83,9 +91,9 @@ quality_gates:
     completed_at: null
 
 validation:
-  status: pending
-  last_checkpoint: 25
-  next_checkpoint: 50
+  status: checkpoint_50_approved_pending_commit
+  last_checkpoint: 50
+  next_checkpoint: 75
   evidence:
     - { stage: resume_first, checks: "branch, status, tags, base commit and closed states", result: "PASS main clean at v1.1.1 before spec creation" }
     - { stage: planning, checks: "official OWASP, CWE, NIST and language sources; independent planner", result: "READY_FOR_REVIEW" }
@@ -94,12 +102,16 @@ validation:
     - { task: T02, checks: "syntax; 12 config parser tests; legacy; unsafe YAML; prototype keys; linked parent; diff-check", result: "PASS outside sandbox after spawn EPERM; immediate review APPROVED after focal correction" }
     - { task: T03, checks: "syntax; 18 security policy tests; profiles; adaptive risk; unknown stack; invalid manifests", result: "PASS outside sandbox" }
     - { checkpoint: 25, checks: "T01-T03 contract, parser, policy runtime; 30 focal tests; independent review; focal recheck", result: "APPROVED after one consolidated correction" }
+    - { task: T04, checks: "8 canonical/install hashes; role boundaries; state contract; TOML structure; anti-slop focal; diff-check", result: "PASS; immediate review APPROVED" }
+    - { task: T05, checks: "syntax; 34 init/flags/config tests; defaults; inert content; legacy; dry-run; force; conflicts; idempotency; diff-check", result: "PASS outside sandbox; immediate review APPROVED; anti-slop DURING no findings" }
+    - { task: T06, checks: "syntax; healthy standard and off; legacy; located config diagnostics; missing and invalid manifests; no product scan", result: "PASS outside sandbox" }
+    - { checkpoint: 50, checks: "T04-T06 integration; 66 accumulated tests; syntax; diff-check; independent review; anti-slop DURING", result: "APPROVED after one consolidated persistence correction and focal re-check" }
 
 review:
   required: true
   type: immediate_architecture_security_and_final
   pending: false
-  status: planning_approved
+  status: checkpoint_50_approved
   findings:
     - { stage: planning, severity: high, blocking: true, status: resolved, summary: "RF-09 lacked a stable normative baseline coverage list", location: "specs/004-stack-security-profiles/spec.md" }
     - { stage: planning, severity: high, blocking: true, status: resolved, summary: "tasks graph disagreed with canonical state dependencies", location: "specs/004-stack-security-profiles/tasks.md; specs/004-stack-security-profiles/state.yaml" }
@@ -109,6 +121,8 @@ review:
     - { task: T02, severity: medium, blocking: true, status: resolved, summary: "plain scalars accepted YAML-invalid colon followed by whitespace", location: "engine/project-config/index.js" }
     - { checkpoint: 25, severity: high, blocking: true, status: resolved, summary: "global capabilities elevated unrelated changes without change-tag relevance", location: "engine/security/index.js" }
     - { checkpoint: 25, severity: high, blocking: true, status: resolved, summary: "always-applicable controls forced security review for unrelated changes", location: "engine/security/index.js" }
+    - { checkpoint: 50, severity: high, blocking: true, status: resolved, summary: "T06 completion and resume action were not yet persisted", location: "specs/004-stack-security-profiles/state.yaml; specs/004-stack-security-profiles/tasks.md" }
+    - { checkpoint: 50, severity: medium, blocking: true, status: resolved, summary: "checkpoint evidence and compatibility conclusion were incomplete", location: "specs/004-stack-security-profiles/validation.md" }
   planning:
     verdict: APPROVED
     completed_at: "2026-10-27"
@@ -116,10 +130,11 @@ review:
     verdict: pending
   checkpoints:
     - { percent: 25, verdict: APPROVED, completed_at: "2026-10-27", scope: [T01, T02, T03] }
+    - { percent: 50, verdict: APPROVED, completed_at: "2026-10-27", scope: [T04, T05, T06] }
 
 git:
   base_commit: "4e8e41f02b7cc18fc4b5e5c5df2413004f11681c"
-  last_commit: null
+  last_commit: "edd252a"
   working_tree: dirty_expected
   expected_paths: [specs/004-stack-security-profiles, engine/security, engine/project-config, engine/skill, engine/agents, .agents, .codex, .sdd, templates, cli/sdd.js, test, README.md, PLAYBOOK.md, CHANGELOG.md, AGENTS.md, AGENTS.template.md, docs/constitution.md, package.json, package-lock.json]
   protected_tags:
@@ -134,8 +149,8 @@ human_decisions:
     - { id: anti_slop_mode, resolution: "DURING for planning and execution, applied proportionally." }
 
 resume:
-  next_action: commit_block:policy-core
-  reason: "Checkpoint 25 approved after consolidated correction and focal re-review; policy-core is ready to commit."
-  context: { block: policy-core, completed_tasks: [T01, T02, T03], next_tasks: [T04, T05], anti_slop_mode: during }
+  next_action: commit_block:method-cli
+  reason: "T04-T06 implementation and accumulated checks passed; checkpoint 50 awaits focal persistence re-check before the logical block commit."
+  context: { block: method-cli, previous_commit: edd252a, completed_tasks: [T01, T02, T03, T04, T05, T06], next_task: T07, anti_slop_mode: during }
 
 updated_at: "2026-10-27T00:00:00-03:00"

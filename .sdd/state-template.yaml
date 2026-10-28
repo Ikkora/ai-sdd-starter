@@ -42,6 +42,26 @@ quality_gates:
     provider_ids: []
     completed_at: null
 
+# Omitir este bloque completo en estados legacy sin perfil ni evaluación de seguridad.
+security:
+  profile: null # off | standard | strict
+  source: null # configured | spec_evaluation | legacy_absent
+  status: not_evaluated # not_evaluated | evaluated_for_spec | off | pending | evaluated | passed | failed
+  applicable: false
+  risk_level: null
+  control_risk_level: null
+  triggers: []
+  control_ids: []
+  stack_rule_ids: []
+  mode:
+    base: null
+    effective: null
+    reason: null
+  evidence:
+    status: not_required
+    items: []
+  exceptions: []
+
 validation:
   status: pending
   last_checkpoint: null
