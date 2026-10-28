@@ -10,12 +10,12 @@ execution:
   goal: "Implementar SDD Universal v1.2.0 con Stack Profiles y Security Baseline adaptativa sin acoplar el motor a un stack."
   mode: STRICT
   risk_profile: [architecture, security, compatibility, idempotency, traceability, config_parsing, destructive_operations]
-  phase: execute
+  phase: commit
 
 progress:
   total_tasks: 12
-  completed_tasks: 11
-  percent: 92
+  completed_tasks: 12
+  percent: 100
 
 task_graph:
   nodes:
@@ -32,17 +32,17 @@ task_graph:
     - { id: T11, requires: [RF-21, RF-22, RF-27], depends_on: [T07, T08, T09, T10], areas: [package.json, package-lock.json, CHANGELOG.md, .sdd/version], risk: [release_accuracy, traceability], checks: [version_coherence, pack_dry_run, protected_tags], done_when: "v1.2.0 metadata is ready without publication" }
     - { id: T12, requires: [RF-01, RF-02, RF-03, RF-04, RF-05, RF-06, RF-07, RF-08, RF-09, RF-10, RF-11, RF-12, RF-13, RF-14, RF-15, RF-16, RF-17, RF-18, RF-19, RF-20, RF-21, RF-22, RF-23, RF-24, RF-25, RF-26, RF-27], depends_on: [T11], areas: [repository, specs/004-stack-security-profiles], risk: [release_accuracy, security, compatibility], checks: [full_suite, syntax, doctor, pack, hashes, scans, diff, tags], done_when: "complete traceable evidence is ready for gates and final review" }
   edges: [T01->T02, T01->T03, T02->T03, T02->T05, T02->T06, T03->T04, T03->T06, T03->T09, T04->T07, T04->T10, T05->T06, T05->T08, T05->T10, T06->T07, T06->T08, T06->T10, T07->T08, T07->T09, T07->T11, T08->T11, T09->T11, T10->T11, T11->T12]
-  ready: [T12]
+  ready: []
   blocked: []
 
 current_block:
-  id: docs-release
-  name: "Documentación y metadata de release"
-  task_ids: [T10, T11]
-  status: complete
+  id: final-validation
+  name: "Validación final, Quality Gates y cierre"
+  task_ids: [T12]
+  status: approved
 
-completed: [T01, T02, T03, T04, T05, T06, T07, T08, T09, T10, T11]
-pending: [T12]
+completed: [T01, T02, T03, T04, T05, T06, T07, T08, T09, T10, T11, T12]
+pending: []
 
 security:
   profile: null
@@ -59,42 +59,49 @@ security:
     effective: STRICT
     reason: "Repository strict-mode categories already require STRICT before the v1.2.0 evaluator exists."
   evidence:
-    status: partial
+    status: complete
     items:
       - "T04 persists evaluated profile, applicable controls, matched rules, effective mode, evidence and exceptions without merging review roles."
       - "T05 generates standard by default and preserves explicit off or strict as declarative project content."
       - "T06 validates project configuration and installed policy manifests without scanning product code."
       - "T07-T09 distribute byte-identical declarative policy data and verify representative inert scenarios without scanning or executing payloads."
+      - "T12 full validation, Anti-Slop and Deep Review completed; all three technical findings passed focal re-check."
   exceptions: []
 
 quality_gates:
-  status: planned
-  correction_rounds: 0
+  status: completed
+  correction_rounds: 1
   providers:
     anti_slop:
       mode: auto
       applicability: true
       availability: available
-      status: pending_run
+      status: completed
       findings: []
       recheck: { status: not_required, completed_at: null }
     deep_review:
       mode: auto
       applicability: true
       availability: available
-      status: pending_run
-      findings: []
-      recheck: { status: not_required, completed_at: null }
-  consolidated_findings: []
+      status: recheck_complete
+      findings:
+        - { id: qg-deep-review-plain-hash, category: correctness, severity: medium, location: "engine/project-config/index.js:60", summary: "Plain scalars containing a non-comment hash are truncated", blocking: false, status: resolved }
+        - { id: qg-deep-review-replacement-tokens, category: correctness, severity: medium, location: "cli/sdd.js:217", summary: "JavaScript replacement tokens corrupt user-controlled stack values", blocking: false, status: resolved }
+        - { id: qg-deep-review-inline-map-children, category: correctness, severity: medium, location: "engine/project-config/index.js:182", summary: "Children beneath inline empty maps are silently ignored", blocking: false, status: resolved }
+      recheck: { status: complete, completed_at: "2026-10-28" }
+  consolidated_findings:
+    - { id: qg-deep-review-plain-hash, providers: [deep_review], category: correctness, severity: medium, location: "engine/project-config/index.js:60", status: resolved }
+    - { id: qg-deep-review-replacement-tokens, providers: [deep_review], category: correctness, severity: medium, location: "cli/sdd.js:217", status: resolved }
+    - { id: qg-deep-review-inline-map-children, providers: [deep_review], category: correctness, severity: medium, location: "engine/project-config/index.js:182", status: resolved }
   recheck:
-    status: not_required
-    provider_ids: []
-    completed_at: null
+    status: complete
+    provider_ids: [deep_review]
+    completed_at: "2026-10-28"
 
 validation:
-  status: checkpoint_75_approved
-  last_checkpoint: 75
-  next_checkpoint: 100
+  status: final_approved_pending_commit
+  last_checkpoint: 100
+  next_checkpoint: null
   evidence:
     - { stage: resume_first, checks: "branch, status, tags, base commit and closed states", result: "PASS main clean at v1.1.1 before spec creation" }
     - { stage: planning, checks: "official OWASP, CWE, NIST and language sources; independent planner", result: "READY_FOR_REVIEW" }
@@ -113,12 +120,15 @@ validation:
     - { checkpoint: 75, checks: "T07-T09; full suite 92/92; doctor 14/14; npm pack dry-run 38 entries; 5 dynamic canonical/template/installed hashes; syntax; diff-check; independent review; anti-slop DURING", result: "APPROVED after one consolidated correction and focal re-check" }
     - { task: T10, checks: "normative/public docs; open custom example; role boundaries; 2 canonical/install hashes; links; parser example; installer 9/9; anti-slop copywriting; diff-check", result: "PASS; immediate review APPROVED without findings" }
     - { task: T11, checks: "package/lock/install version 1.2.0; CLI version; init; doctor; pack dry-run 38 entries; no runtime dependencies; protected tags; no publication", result: "PASS after correcting two obsolete installer expectations" }
+    - { task: T12, checks: "suite 92/92; npm check; local and fresh-install doctor; pack 38 entries; diff-check; 9 direct pairs; state template; security 5x3; secrets, paths and residue scans; tags", result: "PASS; no product defects or residues" }
+    - { stage: quality_gates, checks: "Anti-Slop final; Deep Review from v1.1.1; one consolidated correction; 42 focal tests; provider re-check", result: "PASS; 3 medium Deep Review findings resolved; Anti-Slop no findings" }
+    - { checkpoint: 100, checks: "T10-T12; full validation; Quality Gates; focal re-check; independent SDD Reviewer final", result: "APPROVED without blockers or optional observations" }
 
 review:
   required: true
   type: immediate_architecture_security_and_final
   pending: false
-  status: docs_release_approved
+  status: final_approved
   findings:
     - { stage: planning, severity: high, blocking: true, status: resolved, summary: "RF-09 lacked a stable normative baseline coverage list", location: "specs/004-stack-security-profiles/spec.md" }
     - { stage: planning, severity: high, blocking: true, status: resolved, summary: "tasks graph disagreed with canonical state dependencies", location: "specs/004-stack-security-profiles/tasks.md; specs/004-stack-security-profiles/state.yaml" }
@@ -138,15 +148,17 @@ review:
     verdict: APPROVED
     completed_at: "2026-10-27"
   final:
-    verdict: pending
+    verdict: APPROVED
+    completed_at: "2026-10-28"
   checkpoints:
     - { percent: 25, verdict: APPROVED, completed_at: "2026-10-27", scope: [T01, T02, T03] }
     - { percent: 50, verdict: APPROVED, completed_at: "2026-10-27", scope: [T04, T05, T06] }
     - { percent: 75, verdict: APPROVED, completed_at: "2026-10-27", scope: [T07, T08, T09] }
+    - { percent: 100, verdict: APPROVED, completed_at: "2026-10-28", scope: [T10, T11, T12] }
 
 git:
   base_commit: "4e8e41f02b7cc18fc4b5e5c5df2413004f11681c"
-  last_commit: "f0d3ca4fa7aeeec9c074b56b116a8333ea02ec69"
+  last_commit: "2fe6b3765933d781aeac014b5af4285b5b2a7189"
   working_tree: dirty_expected
   expected_paths: [specs/004-stack-security-profiles, engine/security, engine/project-config, engine/skill, engine/agents, .agents, .codex, .sdd, templates, cli/sdd.js, test, README.md, PLAYBOOK.md, CHANGELOG.md, AGENTS.md, AGENTS.template.md, docs/constitution.md, package.json, package-lock.json]
   protected_tags:
@@ -161,8 +173,8 @@ human_decisions:
     - { id: anti_slop_mode, resolution: "DURING for planning and execution, applied proportionally." }
 
 resume:
-  next_action: commit_block:docs-release
-  reason: "T10-T11 checks, independent review and focal re-check are approved."
-  context: { block: docs-release, previous_commit: f0d3ca4, completed_tasks: [T01, T02, T03, T04, T05, T06, T07, T08, T09, T10, T11], next_task: T12, anti_slop_mode: during }
+  next_action: commit_block:final-validation
+  reason: "Checkpoint 100 and the independent final Reviewer are approved; commit the reviewed final corrections."
+  context: { block: final-validation, previous_commit: 2fe6b37, completed_tasks: [T01, T02, T03, T04, T05, T06, T07, T08, T09, T10, T11, T12], anti_slop_mode: during }
 
-updated_at: "2026-10-27T00:00:00-03:00"
+updated_at: "2026-10-28T00:00:00-03:00"

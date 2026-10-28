@@ -57,7 +57,7 @@ function stripInlineComment(value) {
       inDouble = true;
     } else if (character === "'") {
       inSingle = true;
-    } else if (character === '#') {
+    } else if (character === '#' && (index === 0 || /\s/.test(value[index - 1]))) {
       return { text: value.slice(0, index).trimEnd(), unterminatedQuote: false };
     }
   }
@@ -122,6 +122,7 @@ function parseProjectConfig(projectYaml, options = {}) {
   const diagnostics = [];
   let currentSection = null;
   let currentComponent = null;
+  let emptySection = null;
   let securityProfileDeclared = false;
 
   function addDiagnostic(code, message, line) {
@@ -160,6 +161,7 @@ function parseProjectConfig(projectYaml, options = {}) {
 
     if (indent === 0) {
       currentComponent = null;
+      emptySection = null;
       const stripped = stripInlineComment(rawContent);
       const topLevel = splitEntry(stripped.text);
       if (!topLevel || !TARGET_SECTIONS.has(topLevel.key)) {
@@ -180,6 +182,7 @@ function parseProjectConfig(projectYaml, options = {}) {
 
       if (topLevel.rawValue === '') continue;
       if ((currentSection === 'stack' || currentSection === 'capabilities') && topLevel.rawValue === '{}') {
+        emptySection = currentSection;
         currentSection = null;
         continue;
       }
@@ -188,7 +191,12 @@ function parseProjectConfig(projectYaml, options = {}) {
       continue;
     }
 
-    if (!currentSection) continue;
+    if (!currentSection) {
+      if (emptySection) {
+        addDiagnostic('empty_map_has_children', `${emptySection} is declared as an empty map and cannot contain child entries.`, lineNumber);
+      }
+      continue;
+    }
 
     if (indentText.includes('\t')) {
       addDiagnostic('unsupported_indentation', `${currentSection} cannot use tab indentation.`, lineNumber);

@@ -63,6 +63,26 @@ test('repeated stack and capability flags render deterministic custom components
   });
 });
 
+test('stack replacement tokens remain literal through init and config parsing', () => {
+  withTemp((root) => {
+    const result = runCli(
+      root,
+      'init',
+      '--stack', 'worker.ampersand=$&',
+      '--stack', 'worker.prefix=$`',
+      '--stack', "worker.suffix=$'",
+    );
+    assert.equal(result.status, 0, result.stderr);
+    const parsed = parseProjectConfig(projectConfig(root));
+    assert.equal(parsed.valid, true, JSON.stringify(parsed.diagnostics));
+    assert.deepEqual(parsed.config.stack.worker, {
+      ampersand: '$&',
+      prefix: '$`',
+      suffix: "$'",
+    });
+  });
+});
+
 test('invalid profile, boolean, shape, and duplicates fail before writes', async (context) => {
   const cases = [
     { args: ['--security', 'maximum'], message: /must be off, standard, or strict/ },

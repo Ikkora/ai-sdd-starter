@@ -197,6 +197,39 @@ test('plain scalars with colon followed by whitespace require quotes', () => {
   });
 });
 
+test('plain scalar hashes remain content unless preceded by whitespace', () => {
+  const result = parseProjectConfig(`stack:
+  compiler:
+    language: C#
+    revision: sha#fragment
+    note: value # comment
+`);
+
+  assert.equal(result.valid, true, JSON.stringify(result.diagnostics));
+  assert.deepEqual(result.config.stack.compiler, {
+    language: 'C#',
+    revision: 'sha#fragment',
+    note: 'value',
+  });
+});
+
+test('empty stack and capabilities maps reject child entries', () => {
+  const result = parseProjectConfig(`stack: {}
+  backend:
+capabilities: {}
+  authentication: true
+`);
+
+  assert.equal(result.valid, false);
+  assert.deepEqual(
+    result.diagnostics.map(({ code, line }) => ({ code, line })),
+    [
+      { code: 'empty_map_has_children', line: 2 },
+      { code: 'empty_map_has_children', line: 4 },
+    ],
+  );
+});
+
 test('dynamic keys do not mutate object prototypes', () => {
   const result = parseProjectConfig(`stack:
   __proto__:

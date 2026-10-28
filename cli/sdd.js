@@ -214,7 +214,7 @@ function customizeProject(content, context) {
     .replace('"<project-name>"', () => JSON.stringify(context.projectName))
     .replace('"<path-to-constitution>"', '"docs/constitution.md"')
     .replace('"<path-to-operational-memory>"', 'null')
-    .replace('stack: {}', renderStack(context.stack))
+    .replace('stack: {}', () => renderStack(context.stack))
     .replace('capabilities: {}', renderCapabilities(context.capabilities))
     .replace('profile: standard', `profile: ${context.security || 'standard'}`);
 }

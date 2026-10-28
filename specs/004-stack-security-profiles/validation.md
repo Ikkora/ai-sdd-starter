@@ -1,12 +1,12 @@
 # Validación: Spec 004
 
-Estado: pending
+Estado: approved-pending-commit
 
 ## Evidencia por requisito
 
 | Requisitos | Evidencia | Resultado |
 |---|---|---|
-| RF-01 a RF-27 | Pendiente de implementación | PENDIENTE |
+| RF-01 a RF-27 | T01-T12, suite, smokes, hashes, scans, Quality Gates y Reviewer final | APROBADO |
 
 ## Checkpoints
 
@@ -16,7 +16,7 @@ Estado: pending
 | 25% | T01 a T03 | Manifests, parser, riesgo adaptativo, 30 tests focales y review independiente | APROBADO | Runner Node requiere ejecución fuera del sandbox por `spawn EPERM` |
 | 50% | T04 a T06 | 8 hashes canónico/instalado, syntax, `git diff --check`, 66 tests acumulados, review independiente y Anti-Slop DURING | APROBADO TRAS RE-CHECK | Runner Node requiere ejecución fuera del sandbox por `spawn EPERM` |
 | 75% | T07 a T09 | Suite 92/92, Doctor 14/14, pack seco de 38 entradas, hashes dinámicos 5x3, review y Anti-Slop DURING | APROBADO | `npm pack --dry-run` requiere caché fuera del sandbox; metadata sigue en 1.1.0 hasta T11 |
-| 100% | T10 a T12 | Suite, doctor, pack, hashes, gates y review | PENDIENTE | N/A |
+| 100% | T10 a T12 | Suite 92/92, check, Doctor, pack, hashes, scans, Anti-Slop, Deep Review, re-check y Reviewer final | APROBADO | Tres findings medium corregidos en una ronda; sin excepciones |
 
 ## Evidencia por tarea
 
@@ -32,12 +32,14 @@ Estado: pending
 - T09: 20/20 casos y regresiones directas PASS. SQL injection, XSS, command injection, paths privados, credenciales, autorización, uploads y sesiones/tokens se representan como datos inertes; stack desconocido conserva baseline sin ruleset específico. Los payloads no se pasan al evaluador ni se ejecutan.
 - T10: documentación normativa y pública actualizada con Stack Profile abierto, perfiles de seguridad, baseline, límites de Doctor y responsabilidades diferenciadas. Dos pares canónico/instalado, enlaces, ejemplo parseable, installer 9/9 y Anti-Slop copywriting PASS. Review inmediato APROBADO sin findings.
 - T11: metadata, lockfile y versión instalada coherentes en 1.2.0. CLI, init, Doctor, pack seco de 38 entradas, ausencia de dependencias runtime y tags protegidos verificados. Dos expectativas 1.1.x obsoletas del instalador se corrigieron y el re-check quedó 9/9 PASS. No se creó tag, release, tarball ni publicación.
+- T12: suite 92/92, `npm run check`, Doctor local 14/14, instalación nueva 1.2.0 con Doctor HEALTHY, pack seco de 38 entradas, hashes canónicos/instalados, scans de secretos/rutas/residuos y tags históricos PASS. No se detectaron defectos ni residuos; Quality Gates finales quedan como siguiente acción.
 
 ## Quality Gates
 
-- Anti-Slop DURING: activo para arquitectura, naming, límites de responsabilidad y documentación.
-- Anti-Slop formal: pendiente al 100%.
-- Deep Review: pendiente al 100%.
+- Anti-Slop DURING y final: PASS sin findings; no se detectaron claims fabricados, prosa genérica material, helpers innecesarios ni duplicación de reglas productivas.
+- Deep Review formal desde `v1.1.1`: tres findings medium de correctness.
+- Corrección consolidada: hash válido en plain scalars, tokens de reemplazo literales y rechazo de children tras mapas `{}` inline.
+- Re-check focal: 42/42 tests PASS y los tres findings resueltos sin regresiones.
 
 ## Revisiones
 
@@ -52,7 +54,8 @@ Estado: pending
 - Checkpoint 75% T07-T09: APROBADO tras quitar el último conteo cerrado de rulesets y corregir la continuidad documental.
 - Bloque T10-T11: APROBADO tras corregir una conclusión de continuidad obsoleta y completar el re-check focal.
 - Reviews inmediatos de arquitectura y seguridad: T01-T09 completados.
-- Reviewer final: pendiente.
+- Quality Gates finales: Anti-Slop PASS; Deep Review completado tras una ronda consolidada y re-check focal.
+- Reviewer final independiente: APROBADO sin bloqueantes ni observaciones opcionales.
 
 ## Compatibilidad y rollback
 
@@ -64,6 +67,7 @@ La ausencia de las nuevas secciones conserva comportamiento v1.1.x. `init` nuevo
 - Checkpoint 50%: el primer review detectó que T06 y la evidencia acumulada aún no estaban persistidas. Se aplicó una corrección documental consolidada sin cambios de implementación.
 - T07: el review detectó un inventario de test cerrado; se conservan mínimos v1.2 y comparación dinámica de todos los manifests.
 - Checkpoint 75%: una expectativa de Doctor aún fijaba tres rulesets y la conclusión documental apuntaba a T07. Ambos residuos se corrigieron en una ronda y el re-check quedó APROBADO.
+- Deep Review final: detectó truncamiento de `#` válido, tokens de reemplazo interpretados y children ignorados tras mapas vacíos inline. Los tres findings medium se corrigieron en una sola ronda y pasaron re-check focal.
 
 ## Riesgos residuales
 
@@ -72,8 +76,8 @@ La ausencia de las nuevas secciones conserva comportamiento v1.1.x. `init` nuevo
 
 ## Criterios de finalización
 
-Pendientes.
+Implementación, versión 1.2.0, suite, checks, Doctor, pack, hashes, scans, Quality Gates y Reviewer final completos. Pendientes únicamente commit del bloque final y cierre persistido.
 
 ## Conclusión
 
-T10-T11 están completas y el bloque `docs-release` espera su re-check focal antes del commit lógico. La siguiente tarea ejecutable será T12.
+T01-T12, Quality Gates y Reviewer final están aprobados. La siguiente acción es `commit_block:final-validation`.

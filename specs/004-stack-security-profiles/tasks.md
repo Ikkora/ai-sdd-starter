@@ -88,7 +88,7 @@
   - Hecho cuando: el árbol queda listo para revisión de release sin tag ni publicación.
   - Bloque candidato: `docs-release`.
 
-- [ ] **T12. Validar alcance completo y residuos.** RF-01 a RF-27
+- [x] **T12. Validar alcance completo y residuos.** RF-01 a RF-27
   - Depende de: T11.
   - Áreas previstas: repositorio completo y artefactos de spec.
   - Riesgo: release_accuracy, security, compatibility.
